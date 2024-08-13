@@ -1,0 +1,165 @@
+[
+  {
+    "id": 1,
+    "Title": "Nearshop.online",
+    "git": "https://github.com/rabeeh003/nearshop",
+    "live": "https://nearshop.online/",
+    "description": "Multi-vendor eCommerce app connecting shops and customers with billing management.",
+    "image": "",
+    "thambnail": "/thumbnail/nearshop.png",
+    "story": "A platform for shops to connect with customers, featuring billing management and multi-shop ownership. Integrated Google Maps for location-based services.",
+    "fechers": [
+      "3 types of users (customers, shoppers, owners)",
+      "4 types of authentication methods",
+      "Google Maps integration",
+      "Billing and payment management",
+      "Global product concept to reduce duplicate entries"
+    ],
+    "skills": [
+      "React",
+      "Django",
+      "PostgreSQL",
+      "RestAPI",
+      "JWT",
+      "Google Maps",
+      "Firebase",
+      "AWS",
+      "Gunicorn",
+      "Git",
+      "Bootstrap",
+      "Phone OTP Auth",
+      "Razorpay"
+    ]
+  },
+  {
+    "id": 2,
+    "Title": "University Manager",
+    "git": "https://github.com/rabeeh003/university-frontend",
+    "live": "https://juniorcollege.vercel.app/",
+    "description": "Project for Juniar College coordination at Jamia Nooriyya.",
+    "image": "",
+    "thambnail": "/thumbnail/juniar-college.png",
+    "story": "A project to computerize the coordination of 60+ junior colleges, 5300+ students, and 3 courses at Jamia Nooriyya. Planned to implement a barcode system for exams.",
+    "fechers": [
+      "4 user sections (Admin, College, Teacher, Student)",
+      "Admin management of colleges, students, exams, entrance, and results",
+      "Planning to implement a barcode system for exams"
+    ],
+    "skills": [
+      "Next.js",
+      "TypeScript",
+      "Django",
+      "PostgreSQL",
+      "Redux",
+      "RestAPI",
+      "JWT",
+      "Git",
+      "Tailwind",
+      "NextUI",
+      "Framer-motion",
+      "Jodit editor",
+      "Themes",
+      "Axios"
+    ]
+  },
+  {
+    "id": 3,
+    "Title": "OLX - Redesign",
+    "description": "Redesign of the OLX website with a modern look.",
+    "git": "https://github.com/rabeeh003/OLX",
+    "live": "https://olx-delta.vercel.app/",
+    "image": "",
+    "thambnail": "/thumbnail/olx.png",
+    "story": "A project to redesign the OLX website, focusing on modernizing the user interface and integrating Firebase for authentication and data storage.",
+    "fechers": [
+      "Modern UI design",
+      "Firebase for authentication and data storage"
+    ],
+    "skills": [
+      "React Vite",
+      "Firebase",
+      "Axios",
+      "Vercel"
+    ]
+  },
+  {
+    "id": 4,
+    "Title": "Modapps.in",
+    "description": "App store and blog website built as a freelance project.",
+    "live": "https://modapps.in/",
+    "image": "",
+    "thambnail": "/thumbnail/modapps.png",
+    "story": "A platform that allows admin to manage apps and blog posts, with integrated Google Analytics for traffic analysis. Enhanced user experience with NextUI and Framer motion.",
+    "fechers": [
+      "Admin management of apps and blogs",
+      "Google Analytics integration",
+      "NextUI and Framer motion for enhanced user experience",
+      "Jodit text editor for blog writing",
+      "Hosted on AWS"
+    ],
+    "skills": [
+      "React Vite",
+      "Django",
+      "PostgreSQL",
+      "Redux",
+      "RestAPI",
+      "JWT",
+      "Google Analytics",
+      "AWS",
+      "Gunicorn",
+      "Git",
+      "Tailwind",
+      "NextUI",
+      "Framer-motion",
+      "Jodit editor",
+      "Themes",
+      "Axios"
+    ]
+  },
+  {
+    "id": 5,
+    "Title": "Hotler",
+    "description": "Website for cafes, messes, hotels, and restaurants with QR ordering.",
+    "git":"https://github.com/rabeeh003/Hotler/",
+    "live":"https://hotler.vercel.app/",
+    "image": "/product/hotler.png",
+    "thambnail": "/thumbnail/hotler.png",
+    "story": "A project aimed at implementing a QR ordering system for customers without authentication, targeting cafes, messes, hotels, and restaurants.",
+    "fechers": [
+      "QR ordering system without customer authentication",
+      "Framer motion for frontend animation",
+      "Planning to add subscription setup"
+    ],
+    "skills": [
+      "Next.js",
+      "NextUI",
+      "Framer-motion",
+      "Firebase Storage",
+      "Google Maps",
+      "Chart.js",
+      "Next-auth",
+      "Next-themes"
+    ]
+  },
+  {
+    "id": 6,
+    "Title": "Metrix Game",
+    "description": "1024 game with custom algorithm for calculation and alignment.",
+    "git":"https://github.com/rabeeh003/1024/",
+    "live":"https://1024-game.vercel.app/",
+    "image": "",
+    "thambnail": "/thumbnail/1024.png",
+    "story": "Developed the 1024 game with a custom algorithm for metrix calculation and alignment. Used NPM modules for swipe tracking and music playback.",
+    "fechers": [
+      "Custom algorithm for metrix calculation",
+      "Swipe tracking",
+      "Music playback"
+    ],
+    "skills": [
+      "React Vite",
+      "React-swipeable",
+      "Metrix",
+      "React-howler"
+    ]
+  }
+]
