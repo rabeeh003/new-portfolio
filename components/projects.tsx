@@ -17,18 +17,21 @@ interface Project {
 }
 
 function Projects() {
-  const [selectedProject, setSelectedProject] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<number>(0);
 
   return (
     <>
       <div className="sticky -top-16 z-30 font-bold text-xl mt-8 w-full backdrop-filter backdrop-blur-lg bg-opacity-30">
         <h2>Projects</h2>
         <div className="flex overflow-x-scroll sm:scrollbar-hide">
-          {pros.map((project: Project,count) => (
+          {pros.map((project: Project, index) => (
             <div
               key={project.id}
               className="flex-none"
-              onClick={() => setSelectedProject(count)}
+              onClick={() => setSelectedProject(project.id)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Select project ${project.Title}`}
             >
               <ProjectCard
                 title={project.Title}

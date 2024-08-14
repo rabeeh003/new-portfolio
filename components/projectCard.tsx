@@ -21,7 +21,10 @@ function ProjectCard({ title, description, thumbnail }: ProjectCardProps) {
           height={1000}
           className="w-[210px] md:w-[239px] max-h-[130px] rounded-b-none rounded-t-md object-cover"
           alt="Project thumbnail"
-          src={thumbnail || "https://app.requestly.io/delay/5000/https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"}
+          src={
+            thumbnail ||
+            "https://app.requestly.io/delay/5000/https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
+          }
         />
         <h3 className="text-medium mt-2">{title}</h3>
         <p className="text-xs font-extralight truncate overflow-hidden max-w-full">

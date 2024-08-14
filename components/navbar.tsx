@@ -28,7 +28,6 @@ import {
 import { LinkedinIcon } from "lucide-react";
 
 export const Navbar = () => {
-
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -60,7 +59,11 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="LinkedIn" href={siteConfig.links.linkedIn}>
+          <Link
+            isExternal
+            aria-label="LinkedIn"
+            href={siteConfig.links.linkedIn}
+          >
             <LinkedinIcon size={20} className="text-default-500" />
           </Link>
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
@@ -98,11 +101,7 @@ export const Navbar = () => {
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                      : "foreground"
-                }
+                color={index === 2 ? "primary" : "foreground"}
                 href="#"
                 size="lg"
               >

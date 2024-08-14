@@ -2,7 +2,8 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Rabeeh pk",
-  description: "I am Muhammed rabeeh pk. this is my personal portfolio. i am a fullstack developer with strong knoledge in forntend.",
+  description:
+    "I am Muhammed rabeeh pk. this is my personal portfolio. i am a fullstack developer with strong knoledge in forntend.",
   navItems: [
     {
       label: "Project",
