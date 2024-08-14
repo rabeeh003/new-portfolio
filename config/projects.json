@@ -63,7 +63,7 @@
     ]
   },
   {
-    "id": 4,
+    "id": 3,
     "Title": "Modapps.in",
     "description": "App store and blog website built as a freelance project.",
     "live": "https://modapps.in/",
@@ -97,7 +97,7 @@
     ]
   },
   {
-    "id": 5,
+    "id": 4,
     "Title": "Hotler",
     "description": "Website for cafes, messes, hotels, and restaurants with QR ordering.",
     "git": "https://github.com/rabeeh003/Hotler/",
@@ -122,7 +122,7 @@
     ]
   },
   {
-    "id": 6,
+    "id": 5,
     "Title": "Metrix Game",
     "description": "1024 game with custom algorithm for calculation and alignment.",
     "git": "https://github.com/rabeeh003/1024/",
@@ -138,7 +138,7 @@
     "skills": ["React Vite", "React-swipeable", "Metrix", "React-howler"]
   },
   {
-    "id": 3,
+    "id": 6,
     "Title": "OLX - Redesign",
     "description": "Redesign of the OLX website with a modern look.",
     "git": "https://github.com/rabeeh003/OLX",

@@ -28,7 +28,7 @@ function Projects() {
             <div
               key={project.id}
               className="flex-none"
-              onClick={() => setSelectedProject(project.id)}
+              onClick={() => setSelectedProject(index)}
               role="button"
               tabIndex={0}
               aria-label={`Select project ${project.Title}`}
