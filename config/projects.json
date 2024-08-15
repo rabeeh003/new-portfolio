@@ -4,10 +4,10 @@
     "Title": "Nearshop.online",
     "git": "https://github.com/rabeeh003/nearshop",
     "live": "https://nearshop.online/",
-    "description": "Multi-vendor eCommerce app connecting shops and customers with billing management.",
+    "description": "Multi-vendor eCommerce app connecting shops and customers with inventory management, billing, and payment management.",
     "image": "/product/nearshop.png",
     "thambnail": "/thumbnail/nearshop.png",
-    "story": "A platform for shops to connect with customers, featuring billing management and multi-shop ownership. Integrated Google Maps for location-based services.",
+    "story": "A platform for retail shops to connect with customers, featuring billing management and multi-shop ownership. Integrated Google Maps for location-based services. shop can manage inventory, orders and billing, customers can order products, and owners can manage shops. shops and owncer can analize the their sales and customers' orders.",
     "fechers": [
       "3 types of users (customers, shoppers, owners)",
       "4 types of authentication methods",
@@ -36,14 +36,16 @@
     "Title": "University Manager",
     "git": "https://github.com/rabeeh003/university-frontend",
     "live": "https://juniorcollege.vercel.app/",
-    "description": "Project for Juniar College coordination at Jamia Nooriyya.",
+    "description": "This project under construction. this increases the efficiency of the administration and colleges from entrance to finel exams.",
     "image": "/product/juniar-college.png",
     "thambnail": "/thumbnail/juniar-college.png",
-    "story": "A project to computerize the coordination of 60+ junior colleges, 5300+ students, and 3 courses at Jamia Nooriyya. Planned to implement a barcode system for exams.",
+    "story": "This project under construction. when i studing at my college, i noticed the systom is not efficient and computrised. so i decided to make this app to increase the efficiency of the administration and colleges from entrance to finel exams. the administration can manage colleges, department, syllabus, exams, entrance, and results. colleges can manage students and teachers. teachers can manage their attendance and marks. students can see their grades and results.",
     "fechers": [
       "4 user sections (Admin, College, Teacher, Student)",
+      "implement a barcode system for exams. its help to fast and sequre result publishing",
       "Admin management of colleges, students, exams, entrance, and results",
-      "Planning to implement a barcode system for exams"
+      "College management of students, and teachers",
+      "selected teachers only the access for adding exam results"
     ],
     "skills": [
       "Next.js",
@@ -99,16 +101,16 @@
   {
     "id": 4,
     "Title": "Hotler",
-    "description": "Website for cafes, messes, hotels, and restaurants with QR ordering.",
+    "description": "Order management system for cafes, messes, hotels, and restaurants with QR ordering. this project is still in final development.",
     "git": "https://github.com/rabeeh003/Hotler/",
     "live": "https://hotler.vercel.app/",
     "image": "/product/hotler.png",
     "thambnail": "/thumbnail/hotler.png",
-    "story": "A project aimed at implementing a QR ordering system for customers without authentication, targeting cafes, messes, hotels, and restaurants.",
+    "story": "This project is still in final development. This is a project aimed at implementing a QR ordering system for customers without authentication, targeting cafes, messes, hotels, restaurants and other businesses. The system will be able to generate QR codes for customers to order, and the system will be able to track the order status and deliver the food to the customer.",
     "fechers": [
       "QR ordering system without customer authentication",
-      "Framer motion for frontend animation",
-      "Planning to add subscription setup"
+      "Subscription for this product",
+      "Framer motion for frontend animation"
     ],
     "skills": [
       "Next.js",
@@ -145,7 +147,7 @@
     "live": "https://olx-delta.vercel.app/",
     "image": "/product/olx.png",
     "thambnail": "/thumbnail/olx.png",
-    "story": "A project to redesign the OLX website, focusing on modernizing the user interface and integrating Firebase for authentication and data storage.",
+    "story": "When i visited the OLX website, i noticed the UI was not modern and the website was not responsive. so i decided to make a redesign of the website with a modern look and feel. i made new look for the home and other pages. its a good experiance to me.",
     "fechers": [
       "Modern UI design",
       "Firebase for authentication and data storage"
