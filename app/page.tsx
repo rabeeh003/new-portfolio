@@ -17,7 +17,7 @@ export default function Home() {
     <section className="relative flex flex-col items-center justify-center gap-4 pt-8 md:py-10">
       <div className="flex flex-col items-center justify-center gap-4 h-[70vh]">
         <div className="inline-block max-w-lg text-center justify-center">
-          <h1 className={title()}>Hi,&nbsp; welcome!</h1>
+          <h1 className={title()}>Hi,&nbsp;</h1>
           <br />
           <h1 className={title()}>I am</h1>
           <h1 className={title({ color: "violet" })}> Rabeeh PK,&nbsp;</h1>
