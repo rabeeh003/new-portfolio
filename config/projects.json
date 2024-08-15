@@ -153,5 +153,19 @@
       "Firebase for authentication and data storage"
     ],
     "skills": ["React Vite", "Firebase", "Axios", "Vercel"]
+  },
+  {
+    "id": 6,
+    "Title": "Al Misbah",
+    "description": "Dua application for musslims.",
+    "live": "https://rabeeh003.github.io/almisbah.com/",
+    "image": "/product/almisbah.png",
+    "thambnail": "/thumbnail/almisbah.png",
+    "story": "When i visited the OLX website, i noticed the UI was not modern and the website was not responsive. so i decided to make a redesign of the website with a modern look and feel. i made new look for the home and other pages. its a good experiance to me.",
+    "fechers": [
+      "Modern UI design",
+      "Firebase for authentication and data storage"
+    ],
+    "skills": ["React Vite", "Firebase", "Axios", "Vercel"]
   }
 ]

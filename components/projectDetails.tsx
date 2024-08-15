@@ -31,7 +31,7 @@ function ProjectDetails({ project }: { project: number }) {
           {/* Image Layer */}
           <Image
             width={300}
-            height={280}
+            height={300}
             className="relative z-10 h-auto object-cover"
             alt={proj.Title}
             src={
