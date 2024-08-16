@@ -100,11 +100,12 @@
     "thambnail": "/thumbnail/nearshop.png",
     "story": "A platform for retail shops to connect with customers, featuring billing management and multi-shop ownership. Integrated Google Maps for location-based services. shop can manage inventory, orders and billing, customers can order products, and owners can manage shops. shops and owncer can analize the their sales and customers' orders.",
     "fechers": [
-      "3 types of users (customers, shoppers, owners)",
-      "4 types of authentication methods",
-      "Google Maps integration",
-      "Billing and payment management",
-      "Global product concept to reduce duplicate entries"
+      "3 types of users (customers, shoppers, owners).",
+      "4 types of authentication methods.",
+      "Google Maps integration.",
+      "Billing and payment management.",
+      "Global product concept to reduce duplicate entries.",
+      "Progressive Web App (PWA)."
     ],
     "skills": [
       "React",
@@ -119,7 +120,8 @@
       "Git",
       "Bootstrap",
       "Phone OTP Auth",
-      "Razorpay"
+      "Razorpay",
+      "Figma"
     ]
   },
   {
@@ -161,6 +163,26 @@
       "Firebase",
       "Axios",
       "Vercel"
+    ]
+  },
+  {
+    "id": 9,
+    "Title": "Movie List",
+    "description": "Movie list android app with TMDB API integration using React Native.",
+    "git": "https://github.com/rabeeh003/MovieApp",
+    "image": "/product/movieapp.png",
+    "thambnail": "/thumbnail/movieapp.png",
+    "story": "This application is a movie list app with TMDB API integration using React Native. It is a simple app that allows users to search for movies and view their details. It is a great way to learn React Native and TMDB API.",
+    "fechers": [
+      "TMDB api integration",
+      "Clean design"
+    ],
+    "skills": [
+      "React Native",
+      "TMDB API",
+      "Axios",
+      "expo cli",
+      "Yarn"
     ]
   },
   {
