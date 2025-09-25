@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin/
+Disallow: /admin
+
+# Allow all other pages
+Allow: /
+Allow: /projects
+Allow: /about
+Allow: /contact
+
+# Sitemap location (if you have one)
+# Sitemap: https://rabeeh.vercel.app/sitemap.xml

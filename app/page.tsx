@@ -1,68 +1,41 @@
-import { Link } from "@nextui-org/link";
-import { Snippet } from "@nextui-org/snippet";
-import { Code } from "@nextui-org/code";
-import { button as buttonStyles } from "@nextui-org/theme";
+import { Suspense } from 'react';
+import Header from '@/components/Header';
+import HeroSection from '@/components/HeroSection';
+import FeaturedProjects from '@/components/FeaturedProjects';
+import ExperienceSection from '@/components/ExperienceSection';
+import EducationSection from '@/components/EducationSection';
+import SkillsSection from '@/components/SkillsSection';
+import ContactSection from '@/components/ContactSection';
+import Footer from '@/components/Footer';
 
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
-import { LucideLinkedin, Slice } from "lucide-react";
-import ProjectCard from "@/components/projectCard";
-import ProjectDetails from "@/components/projectDetails";
-import projects from "@/config/projects.json";
-import Projects from "@/components/projects";
-
+function LoadingSection({ title }: { title: string }) {
+  return (
+    <section className="min-h-screen bg-black py-20 flex items-center justify-center">
+      <div className="text-white text-xl">Loading {title}...</div>
+    </section>
+  );
+}
 export default function Home() {
   return (
-    <section className="relative flex flex-col items-center justify-center gap-4 pt-8 md:py-10">
-      <div className="flex flex-col items-center justify-center gap-4 h-[70vh]">
-        <div className="inline-block max-w-lg text-center justify-center">
-          <h1 className={title()}>Hi,&nbsp;</h1>
-          <br />
-          <h1 className={title()}>I am</h1>
-          <h1 className={title({ color: "violet" })}> Rabeeh PK,&nbsp;</h1>
-          <br />
-          <h1 className={title()}>a passionate developer.</h1>
-          <h2 className={subtitle({ class: "mt-4" })}>
-            Fullstack developer, with strong knoledge in Frontend.
-          </h2>
-        </div>
-
-        <div className="flex gap-3">
-          <Link
-            isExternal
-            className={buttonStyles({
-              color: "primary",
-              radius: "full",
-              variant: "shadow",
-            })}
-            href={siteConfig.links.linkedIn}
-          >
-            <LucideLinkedin size={19} />
-            LinkedIn
-          </Link>
-          <Link
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={siteConfig.links.github}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link>
-        </div>
-
-        <div className="mt-8">
-          <Snippet hideCopyButton hideSymbol variant="bordered">
-            <span>
-              Get more info download
-              <a href="/Rabeeh-pk-Resume.pdf" download="Rabeeh-pk-Resume.pdf">
-                <Code color="primary">resume.pdf</Code>
-              </a>
-            </span>
-          </Snippet>
-        </div>
-      </div>
-      <Projects />
-    </section>
+    <main className="bg-black min-h-screen">
+      <Header />
+      <HeroSection />
+      <Suspense fallback={<LoadingSection title="experiences" />}>
+        <ExperienceSection />
+      </Suspense>
+      <Suspense fallback={<LoadingSection title="projects" />}>
+        <FeaturedProjects />
+      </Suspense>
+      <Suspense fallback={<LoadingSection title="education" />}>
+        <EducationSection />
+      </Suspense>
+      {/* <Suspense fallback={<LoadingSection title="skills" />}>
+        <SkillsSection />
+      </Suspense> */}
+      <Suspense fallback={<LoadingSection title="contact" />}>
+        <ContactSection />
+      </Suspense>
+      <Footer />
+    </main>
   );
 }
