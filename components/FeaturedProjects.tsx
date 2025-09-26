@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, Star, Award, Zap, ArrowRight, Play, Code, Smartphone, Monitor } from 'lucide-react';
+import { ExternalLink, Github, Star, Award, Zap, ArrowRight, Play, Code, Smartphone, Monitor, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // App Store and Play Store Icons
 const PlayStoreIcon = () => (
@@ -47,10 +47,86 @@ export default function FeaturedProjects() {
   const [loading, setLoading] = useState(true);
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'features' | 'tech'>('overview');
+  const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftStart, setScrollLeftStart] = useState(0);
 
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Scroll functions
+  const checkScrollButtons = () => {
+    if (scrollContainer) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollLeft = () => {
+    if (scrollContainer) {
+      scrollContainer.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainer) {
+      scrollContainer.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    if (scrollContainer) {
+      checkScrollButtons();
+      scrollContainer.addEventListener('scroll', checkScrollButtons);
+      return () => scrollContainer.removeEventListener('scroll', checkScrollButtons);
+    }
+  }, [scrollContainer]);
+
+  // Touch/Drag scroll handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainer) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainer.offsetLeft);
+    setScrollLeftStart(scrollContainer.scrollLeft);
+    scrollContainer.style.cursor = 'grabbing';
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainer) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainer.scrollLeft = scrollLeftStart - walk;
+  };
+
+  const handleMouseUp = () => {
+    if (!scrollContainer) return;
+    setIsDragging(false);
+    scrollContainer.style.cursor = 'grab';
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!scrollContainer) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - scrollContainer.offsetLeft);
+    setScrollLeftStart(scrollContainer.scrollLeft);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !scrollContainer) return;
+    const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainer.scrollLeft = scrollLeftStart - walk;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
 
   // Clear selected project when component unmounts
   useEffect(() => {
@@ -141,27 +217,78 @@ export default function FeaturedProjects() {
         </motion.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16">
-          {/* Project Cards */}
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              className="group relative"
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              onHoverStart={() => setHoveredProject(project.id)}
-              onHoverEnd={() => setHoveredProject(null)}
+        {/* Horizontal Scrollable Grid with Navigation */}
+        <div className="relative mb-16">
+          {/* Left Scroll Button */}
+          {canScrollLeft && (
+            <button
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-full p-3 hover:bg-gray-800/90 hover:border-green-500/50 transition-all duration-300 shadow-lg"
             >
-              {/* Card Background with Gradient Border */}
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-violet-500/20 rounded-2xl blur-sm group-hover:blur-none transition-all duration-500"></div>
+              <ChevronLeft size={20} className="text-white" />
+            </button>
+          )}
 
-              <div 
-                className={`relative bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-green-500/10 cursor-pointer ${
-                  selectedProject?.id === project.id ? 'ring-2 ring-green-500/50' : ''
-                }`}
-                onClick={() => setSelectedProject(project)}
+          {/* Right Scroll Button */}
+          {canScrollRight && (
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-full p-3 hover:bg-gray-800/90 hover:border-green-500/50 transition-all duration-300 shadow-lg"
+            >
+              <ChevronRight size={20} className="text-white" />
+            </button>
+          )}
+
+          {/* Scrollable Container */}
+          <div 
+            ref={setScrollContainer}
+            className="overflow-x-auto scrollbar-hide pb-4 cursor-grab select-none"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="flex gap-6 min-w-max px-4">
+            {/* Project Cards */}
+            {projects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                className="group relative flex-shrink-0 w-80"
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                onHoverStart={() => setHoveredProject(project.id)}
+                onHoverEnd={() => setHoveredProject(null)}
               >
+                {/* Card Background with Gradient Border */}
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-violet-500/20 rounded-2xl blur-sm group-hover:blur-none transition-all duration-500"></div>
+
+                <div 
+                  className={`relative bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-green-500/10 cursor-pointer h-full flex flex-col ${
+                    selectedProject?.id === project.id ? 'ring-2 ring-green-500/50' : ''
+                  }`}
+                  onClick={() => {
+                    setSelectedProject(project);
+                    // Smooth scroll to details section
+                    setTimeout(() => {
+                      const detailsSection = document.getElementById('project-details');
+                      if (detailsSection) {
+                        detailsSection.scrollIntoView({ 
+                          behavior: 'smooth', 
+                          block: 'start',
+                          inline: 'nearest'
+                        });
+                      }
+                    }, 100);
+                  }}
+                >
                 {/* Project Image */}
                 <div className="relative aspect-video rounded-xl overflow-hidden mb-6">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-blue-500/20">
@@ -203,12 +330,12 @@ export default function FeaturedProjects() {
                 </div>
 
                 {/* Project Details */}
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors duration-300">
+                <div className="space-y-4 flex-1 flex flex-col">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors duration-300 line-clamp-2">
                       {project.title}
                     </h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">
+                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">
                       {project.subtitle}
                     </p>
                   </div>
@@ -231,7 +358,7 @@ export default function FeaturedProjects() {
                   </div>
 
                   {/* Project Type Badge */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mt-auto">
                     <div className={`w-2 h-2 rounded-full ${
                       project.type === 'Company' ? 'bg-green-500' :
                       project.type === 'Freelance' ? 'bg-blue-500' : 'bg-violet-500'
@@ -246,53 +373,56 @@ export default function FeaturedProjects() {
             </motion.div>
           ))}
 
-          {/* View All Projects Card */}
-          <motion.a
-            href="/projects"
-            onClick={() => setSelectedProject(null)}
-            className="group relative"
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: projects.length * 0.2 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {/* Card Background with Gradient Border */}
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-violet-500/20 rounded-2xl blur-sm group-hover:blur-none transition-all duration-500"></div>
+            {/* View All Projects Card */}
+            <motion.a
+              href="/projects"
+              onClick={() => setSelectedProject(null)}
+              className="group relative flex-shrink-0 w-80"
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: projects.length * 0.1 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {/* Card Background with Gradient Border */}
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-violet-500/20 rounded-2xl blur-sm group-hover:blur-none transition-all duration-500"></div>
 
-            <div className="relative bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-green-500/10 h-full flex flex-col items-center justify-center min-h-[300px]">
-              <div className="w-20 h-20 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                <ExternalLink size={32} className="text-green-400" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors duration-300">
-                View All Projects
-              </h3>
-              <p className="text-gray-400 text-sm text-center mb-6">
-                Explore my complete portfolio and discover more innovative solutions
-              </p>
-              <div className="flex items-center gap-2 text-green-400 group-hover:gap-3 transition-all duration-300">
-                <span className="text-sm font-medium">Explore Portfolio</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-              </div>
+              <div className="relative bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-green-500/10 h-full flex flex-col items-center justify-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <ExternalLink size={32} className="text-green-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors duration-300">
+                  View All Projects
+                </h3>
+                <p className="text-gray-400 text-sm text-center mb-6">
+                  Explore my complete portfolio and discover more innovative solutions
+                </p>
+                <div className="flex items-center gap-2 text-green-400 group-hover:gap-3 transition-all duration-300">
+                  <span className="text-sm font-medium">Explore Portfolio</span>
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
 
-              {/* Hover Effect Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-            </div>
-          </motion.a>
+                {/* Hover Effect Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              </div>
+            </motion.a>
+          </div>
+        </div>
         </div>
 
         {/* Selected Project Details */}
         <AnimatePresence mode="wait">
           {selectedProject && (
             <motion.div 
-              className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-green-500/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-green-500/10"
+              id="project-details"
+              className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 lg:p-8 hover:border-green-500/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-green-500/10 mx-4 lg:mx-0"
               key={selectedProject.id}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="grid lg:grid-cols-2 gap-12 items-start">
+              <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                 {/* Project Image */}
                 <div className="relative group">
                   <div className="aspect-video rounded-2xl overflow-hidden relative">
