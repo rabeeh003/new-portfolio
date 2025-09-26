@@ -233,13 +233,40 @@ export default function FeaturedProjects() {
 
   if (loading) {
     return (
-      <section className="min-h-screen bg-black py-20 flex items-center justify-center relative overflow-hidden">
+      <section className="min-h-screen bg-black py-20 relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-violet-500/10 to-lightblue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
-        <div className="text-white text-xl relative z-10">Loading projects...</div>
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          {/* Header Skeleton */}
+          <div className="text-center mb-20">
+            <div className="h-16 bg-gray-800 rounded-lg w-96 mx-auto mb-6 animate-pulse"></div>
+            <div className="h-6 bg-gray-800 rounded w-80 mx-auto animate-pulse"></div>
+          </div>
+
+          {/* Projects Skeleton */}
+          <div className="flex gap-6 min-w-max px-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex-shrink-0 w-80">
+                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 animate-pulse">
+                  <div className="aspect-video bg-gray-800 rounded-xl mb-6"></div>
+                  <div className="space-y-4">
+                    <div className="h-6 bg-gray-800 rounded"></div>
+                    <div className="h-4 bg-gray-800 rounded w-3/4"></div>
+                    <div className="flex gap-2">
+                      <div className="h-6 bg-gray-800 rounded w-16"></div>
+                      <div className="h-6 bg-gray-800 rounded w-20"></div>
+                      <div className="h-6 bg-gray-800 rounded w-14"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     );
   }
@@ -263,13 +290,13 @@ export default function FeaturedProjects() {
           className="text-center mb-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
         >
           <motion.h2
             className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-400 to-violet-400 mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
             Featured Projects
           </motion.h2>
@@ -277,7 +304,7 @@ export default function FeaturedProjects() {
             className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
           >
             Showcasing my best work and innovative solutions
           </motion.p>
@@ -330,7 +357,7 @@ export default function FeaturedProjects() {
                 className="group relative flex-shrink-0 w-80"
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 onHoverStart={() => setHoveredProject(project.id)}
                 onHoverEnd={() => setHoveredProject(null)}
               >
@@ -447,7 +474,7 @@ export default function FeaturedProjects() {
               className="group relative flex-shrink-0 w-80"
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: projects.length * 0.1 }}
+              transition={{ duration: 0.4, delay: projects.length * 0.05 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -487,7 +514,7 @@ export default function FeaturedProjects() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
             >
               <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                 {/* Project Image */}
@@ -668,7 +695,7 @@ export default function FeaturedProjects() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.15 }}
                       >
                         {activeTab === 'overview' && (
                           <div className="space-y-4">
@@ -697,7 +724,7 @@ export default function FeaturedProjects() {
                                   className="bg-gray-800/50 rounded-xl p-4 hover:bg-gray-800/70 transition-colors duration-300"
                                   initial={{ opacity: 0, x: -20 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                                  transition={{ duration: 0.15, delay: index * 0.05 }}
                                 >
                                   <div className="flex items-center gap-3">
                                     <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -724,7 +751,7 @@ export default function FeaturedProjects() {
                                   className="px-4 py-2 bg-gradient-to-r from-gray-800 to-gray-700 border border-gray-600 rounded-full text-sm text-gray-300 hover:border-green-500/50 hover:bg-green-500/10 transition-all duration-300"
                                   initial={{ opacity: 0, scale: 0.8 }}
                                   animate={{ opacity: 1, scale: 1 }}
-                                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                                  transition={{ duration: 0.15, delay: index * 0.05 }}
                                   whileHover={{ scale: 1.05 }}
                                 >
                                   {tech}

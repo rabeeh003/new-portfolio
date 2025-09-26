@@ -71,6 +71,7 @@ export default function ProjectsSection({ projects, companies = [], educations =
   const [activeTab, setActiveTab] = useState<'overview' | 'features' | 'tech'>('overview');
   const [companiesData, setCompaniesData] = useState<Company[]>(companies);
   const [educationsData, setEducationsData] = useState<Education[]>(educations);
+  const [loading, setLoading] = useState(true);
 
   // Fetch companies and education data if not provided as props
   useEffect(() => {
@@ -98,6 +99,7 @@ export default function ProjectsSection({ projects, companies = [], educations =
           console.error('Error fetching company/education data:', error);
         }
       }
+      setLoading(false);
     };
 
     fetchCompanyData();
@@ -154,15 +156,35 @@ export default function ProjectsSection({ projects, companies = [], educations =
 
   return (
     <div className="hidden lg:block">
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 animate-pulse">
+              <div className="aspect-video bg-gray-800 rounded-xl mb-6"></div>
+              <div className="space-y-4">
+                <div className="h-6 bg-gray-800 rounded"></div>
+                <div className="h-4 bg-gray-800 rounded w-3/4"></div>
+                <div className="flex gap-2">
+                  <div className="h-6 bg-gray-800 rounded w-16"></div>
+                  <div className="h-6 bg-gray-800 rounded w-20"></div>
+                  <div className="h-6 bg-gray-800 rounded w-14"></div>
+                </div>
+                <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Projects Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {sortedProjects.map((project, index) => (
           <motion.div
             key={project.id}
             className="group relative"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: index * 0.2 }}
+            transition={{ duration: 0.4, delay: index * 0.2 }}
             onHoverStart={() => setHoveredProject(project.id)}
             onHoverEnd={() => setHoveredProject(null)}
           >
@@ -257,6 +279,8 @@ export default function ProjectsSection({ projects, companies = [], educations =
           </motion.div>
         ))}
       </div>
+        </>
+      )}
 
       {/* Project Details Modal */}
       <AnimatePresence>
@@ -267,7 +291,7 @@ export default function ProjectsSection({ projects, companies = [], educations =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <div className="min-h-screen py-12 px-4">
               <div className="max-w-6xl mx-auto">
@@ -476,7 +500,7 @@ export default function ProjectsSection({ projects, companies = [], educations =
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -20 }}
-                              transition={{ duration: 0.3 }}
+                              transition={{ duration: 0.2 }}
                             >
                               {activeTab === 'overview' && (
                                 <div className="space-y-4">
@@ -505,7 +529,7 @@ export default function ProjectsSection({ projects, companies = [], educations =
                                         className="flex items-start gap-3 p-4 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors duration-300"
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                        transition={{ duration: 0.2, delay: index * 0.1 }}
                                       >
                                         <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                                           <span className="text-white text-sm font-semibold">{index + 1}</span>

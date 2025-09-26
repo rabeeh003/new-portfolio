@@ -163,13 +163,38 @@ export default function FeaturedProjectsMobile() {
 
   if (loading) {
     return (
-      <div className="lg:hidden min-h-[50vh] flex items-center justify-center relative overflow-hidden">
+      <div className="lg:hidden min-h-screen bg-black py-20 relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-violet-500/10 to-lightblue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-violet-500/10 to-lightblue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
-        <div className="text-white text-xl relative z-10">Loading projects...</div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full relative z-10">
+          {/* Header Skeleton */}
+          <div className="text-center mb-16">
+            <div className="h-12 bg-gray-800 rounded-lg w-80 mx-auto mb-6 animate-pulse"></div>
+            <div className="h-5 bg-gray-800 rounded w-64 mx-auto animate-pulse"></div>
+          </div>
+
+          {/* Projects Skeleton */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 animate-pulse">
+                <div className="aspect-video bg-gray-800 rounded-xl mb-6"></div>
+                <div className="space-y-4">
+                  <div className="h-5 bg-gray-800 rounded"></div>
+                  <div className="h-4 bg-gray-800 rounded w-3/4"></div>
+                  <div className="flex gap-2">
+                    <div className="h-5 bg-gray-800 rounded w-12"></div>
+                    <div className="h-5 bg-gray-800 rounded w-16"></div>
+                    <div className="h-5 bg-gray-800 rounded w-10"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -189,13 +214,13 @@ export default function FeaturedProjectsMobile() {
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
         >
           <motion.h2
             className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-400 to-violet-400 mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
           >
             Featured Projects
           </motion.h2>
@@ -203,7 +228,7 @@ export default function FeaturedProjectsMobile() {
             className="text-gray-400 text-lg max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
           >
             Showcasing my best work and innovative solutions
           </motion.p>
@@ -217,7 +242,7 @@ export default function FeaturedProjectsMobile() {
               className="group relative"
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
+              transition={{ duration: 0.4, delay: index * 0.2 }}
             >
               {/* Card Background with Gradient Border */}
               <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-violet-500/20 rounded-2xl blur-sm group-hover:blur-none transition-all duration-500"></div>
@@ -315,7 +340,7 @@ export default function FeaturedProjectsMobile() {
             className="group relative"
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: projects.length * 0.2 }}
+            transition={{ duration: 0.4, delay: projects.length * 0.2 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -351,7 +376,7 @@ export default function FeaturedProjectsMobile() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="min-h-screen flex flex-col">
                 {/* Close Button */}
@@ -372,7 +397,7 @@ export default function FeaturedProjectsMobile() {
                     className="aspect-video rounded-2xl overflow-hidden mb-8 relative"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.2 }}
                   >
                     {/* Animated Background */}
                     <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-violet-500/10 animate-gradient">
@@ -407,7 +432,7 @@ export default function FeaturedProjectsMobile() {
                     className="text-center mb-8"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
+                    transition={{ duration: 0.2, delay: 0.2 }}
                   >
                     <h3 className="text-2xl font-bold text-white mb-2">
                       {selectedProject.title}
@@ -437,7 +462,7 @@ export default function FeaturedProjectsMobile() {
                       className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-4 mb-8"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.25 }}
+                      transition={{ duration: 0.2, delay: 0.25 }}
                     >
                       <div className="flex items-center gap-3">
                         {getCompanyData(selectedProject)?.logoUrl && (
@@ -466,7 +491,7 @@ export default function FeaturedProjectsMobile() {
                     className="flex flex-wrap gap-3 mb-8"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
+                    transition={{ duration: 0.2, delay: 0.3 }}
                   >
                     {selectedProject.liveUrl && (
                       <a
@@ -523,7 +548,7 @@ export default function FeaturedProjectsMobile() {
                     className="space-y-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
+                    transition={{ duration: 0.2, delay: 0.4 }}
                   >
                     <div className="flex space-x-1 bg-gray-800/50 p-1 rounded-xl">
                       {[
@@ -553,7 +578,7 @@ export default function FeaturedProjectsMobile() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.2 }}
                       >
                         {activeTab === 'overview' && (
                           <div className="space-y-4">
@@ -582,7 +607,7 @@ export default function FeaturedProjectsMobile() {
                                   className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors duration-300"
                                   initial={{ opacity: 0, x: -20 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                                  transition={{ duration: 0.2, delay: index * 0.1 }}
                                 >
                                   <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                                     <span className="text-white text-sm font-semibold">{index + 1}</span>
@@ -625,7 +650,7 @@ export default function FeaturedProjectsMobile() {
                     className="sticky -bottom-5 bg-black/90 backdrop-blur-sm border-t border-gray-700/50 p-4 mt-8"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 }}
+                    transition={{ duration: 0.2, delay: 0.6 }}
                   >
                     <motion.button
                       onClick={() => setSelectedProject(null)}
