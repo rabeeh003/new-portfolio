@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Github, X, Star, Award, Zap, Code, Monitor, ArrowRight, Play, Smartphone } from 'lucide-react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 // App Store and Play Store Icons
 const PlayStoreIcon = () => (
@@ -16,8 +18,6 @@ const AppStoreIcon = () => (
     <path d="M11.624 7.222c-.876 0-2.232-.996-3.66-.96-1.884.024-3.612 1.092-4.584 2.784-1.956 3.396-.504 8.412 1.404 11.172.936 1.344 2.04 2.856 3.504 2.808 1.404-.06 1.932-.912 3.636-.912 1.692 0 2.172.912 3.66.876 1.512-.024 2.472-1.368 3.396-2.724 1.068-1.56 1.512-3.072 1.536-3.156-.036-.012-2.94-1.128-2.976-4.488-.024-2.808 2.292-4.152 2.4-4.212-1.32-1.932-3.348-2.148-4.056-2.196-1.848-.144-3.396 1.008-4.26 1.008zm3.12-2.832c.78-.936 1.296-2.244 1.152-3.54-1.116.048-2.46.744-3.264 1.68-.72.828-1.344 2.16-1.176 3.432 1.236.096 2.508-.636 3.288-1.572z" />
   </svg>
 );
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 
 interface Project {
   id: string;
@@ -40,16 +40,102 @@ interface Project {
   order?: number;
 }
 
+interface Company {
+  id: string;
+  company: string;
+  position: string;
+  logoUrl: string;
+}
+
+interface Education {
+  id: string;
+  institution: string;
+  courseName: string;
+  logoUrl: string;
+}
+
 interface ProjectsSectionMobileProps {
   projects?: Project[];
   featuredOnly?: boolean;
+  companies?: Company[];
+  educations?: Education[];
 }
 
-export default function ProjectsSectionMobile({ projects: providedProjects, featuredOnly = true }: ProjectsSectionMobileProps) {
+export default function ProjectsSectionMobile({ projects: providedProjects, featuredOnly = true, companies = [], educations = [] }: ProjectsSectionMobileProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'features' | 'tech'>('overview');
+  const [companiesData, setCompaniesData] = useState<Company[]>(companies);
+  const [educationsData, setEducationsData] = useState<Education[]>(educations);
+
+  // Fetch companies and education data if not provided as props
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      if (companies.length === 0 || educations.length === 0) {
+        try {
+          const [companiesSnapshot, educationSnapshot] = await Promise.all([
+            getDocs(collection(db, 'experiences')),
+            getDocs(collection(db, 'education'))
+          ]);
+
+          const companyData = companiesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Company[];
+
+          const educationData = educationSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Education[];
+
+          setCompaniesData(companyData);
+          setEducationsData(educationData);
+        } catch (error) {
+          console.error('Error fetching company/education data:', error);
+        }
+      }
+    };
+
+    fetchCompanyData();
+  }, [companies, educations]);
+
+  // Sort projects by order/position
+  const sortedProjects = [...projects].sort((a, b) => {
+    if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
+    if (a.order !== undefined) return -1;
+    if (b.order !== undefined) return 1;
+    return 0;
+  });
+
+  // Helper function to get company/education data for a project
+  const getCompanyData = (project: Project) => {
+    if (project.type !== 'Company' || !project.companyId) return null;
+    
+    // Check if it's a company
+    const company = companiesData.find(c => c.id === project.companyId);
+    if (company) {
+      return {
+        type: 'company' as const,
+        name: company.company,
+        position: company.position,
+        logoUrl: company.logoUrl
+      };
+    }
+    
+    // Check if it's an education institution
+    const education = educationsData.find(e => e.id === project.companyId);
+    if (education) {
+      return {
+        type: 'education' as const,
+        name: `${education.institution} - ${education.courseName}`,
+        position: education.courseName,
+        logoUrl: education.logoUrl
+      };
+    }
+    
+    return null;
+  };
 
   // Handle modal scroll lock
   useEffect(() => {
@@ -113,7 +199,7 @@ export default function ProjectsSectionMobile({ projects: providedProjects, feat
       <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full relative z-10">
         {/* Project Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {projects.map((project, index) => (
+          {sortedProjects.map((project, index) => (
             <motion.div
               key={project.id}
               className="group relative"
@@ -355,6 +441,36 @@ export default function ProjectsSectionMobile({ projects: providedProjects, feat
                       )}
                     </div>
                   </motion.div>
+
+                  {/* Company/Education Information */}
+                  {selectedProject.type === 'Company' && getCompanyData(selectedProject) && (
+                    <motion.div 
+                      className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-4 mb-8"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.25 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        {getCompanyData(selectedProject)?.logoUrl && (
+                          <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
+                            <img 
+                              src={getCompanyData(selectedProject)?.logoUrl}
+                              alt={getCompanyData(selectedProject)?.name}
+                              className="w-full h-full object-contain rounded"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-white font-semibold text-sm truncate">
+                            {getCompanyData(selectedProject)?.name}
+                          </h4>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {getCompanyData(selectedProject)?.position}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
                   {/* Action Buttons */}
                   <motion.div 

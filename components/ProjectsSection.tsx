@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Github, X, Star, Award, Zap, Code, Monitor, ArrowRight, Play, Smartphone } from 'lucide-react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface Project {
   id: string;
@@ -10,6 +12,7 @@ interface Project {
   subtitle: string;
   featured: boolean;
   type: 'Hobby' | 'Freelance' | 'Company';
+  companyId?: string;
   thumbnailUrl: string;
   imageUrl: string;
   iconUrl: string;
@@ -22,6 +25,20 @@ interface Project {
   playstoreUrl: string;
   appstoreUrl: string;
   order?: number;
+}
+
+interface Company {
+  id: string;
+  company: string;
+  position: string;
+  logoUrl: string;
+}
+
+interface Education {
+  id: string;
+  institution: string;
+  courseName: string;
+  logoUrl: string;
 }
 
 // App Store and Play Store Icons
@@ -44,12 +61,84 @@ const AppStoreIcon = () => (
 
 interface ProjectsSectionProps {
   projects: Project[];
+  companies?: Company[];
+  educations?: Education[];
 }
 
-export default function ProjectsSection({ projects }: ProjectsSectionProps) {
+export default function ProjectsSection({ projects, companies = [], educations = [] }: ProjectsSectionProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'features' | 'tech'>('overview');
+  const [companiesData, setCompaniesData] = useState<Company[]>(companies);
+  const [educationsData, setEducationsData] = useState<Education[]>(educations);
+
+  // Fetch companies and education data if not provided as props
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      if (companies.length === 0 || educations.length === 0) {
+        try {
+          const [companiesSnapshot, educationSnapshot] = await Promise.all([
+            getDocs(collection(db, 'experiences')),
+            getDocs(collection(db, 'education'))
+          ]);
+
+          const companyData = companiesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Company[];
+
+          const educationData = educationSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Education[];
+
+          setCompaniesData(companyData);
+          setEducationsData(educationData);
+        } catch (error) {
+          console.error('Error fetching company/education data:', error);
+        }
+      }
+    };
+
+    fetchCompanyData();
+  }, [companies, educations]);
+
+  // Sort projects by order/position
+  const sortedProjects = [...projects].sort((a, b) => {
+    if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
+    if (a.order !== undefined) return -1;
+    if (b.order !== undefined) return 1;
+    return 0;
+  });
+
+  // Helper function to get company/education data for a project
+  const getCompanyData = (project: Project) => {
+    if (project.type !== 'Company' || !project.companyId) return null;
+    
+    // Check if it's a company
+    const company = companiesData.find(c => c.id === project.companyId);
+    if (company) {
+      return {
+        type: 'company' as const,
+        name: company.company,
+        position: company.position,
+        logoUrl: company.logoUrl
+      };
+    }
+    
+    // Check if it's an education institution
+    const education = educationsData.find(e => e.id === project.companyId);
+    if (education) {
+      return {
+        type: 'education' as const,
+        name: `${education.institution} - ${education.courseName}`,
+        position: education.courseName,
+        logoUrl: education.logoUrl
+      };
+    }
+    
+    return null;
+  };
 
   // Handle modal scroll lock
   useEffect(() => {
@@ -67,7 +156,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
     <div className="hidden lg:block">
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {projects.map((project, index) => (
+        {sortedProjects.map((project, index) => (
           <motion.div
             key={project.id}
             className="group relative"
@@ -173,7 +262,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
       <AnimatePresence>
         {selectedProject && (
           <motion.div 
-          onClick={() => setSelectedProject(null)}
+          // onClick={() => setSelectedProject(null)}
             className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 overflow-y-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -331,6 +420,31 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
                             </div>
                           </div>
                         </div>
+
+                        {/* Company/Education Information */}
+                        {selectedProject.type === 'Company' && getCompanyData(selectedProject) && (
+                          <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-4 mb-8">
+                            <div className="flex items-center gap-3">
+                              {getCompanyData(selectedProject)?.logoUrl && (
+                                <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
+                                  <img 
+                                    src={getCompanyData(selectedProject)?.logoUrl}
+                                    alt={getCompanyData(selectedProject)?.name}
+                                    className="w-full h-full object-contain rounded"
+                                  />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-white font-semibold text-sm truncate">
+                                  {getCompanyData(selectedProject)?.name}
+                                </h4>
+                                <p className="text-gray-400 text-xs mt-1">
+                                  {getCompanyData(selectedProject)?.position}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Tab Navigation */}
                         <div className="space-y-6">
