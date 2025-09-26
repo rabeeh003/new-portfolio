@@ -27,6 +27,7 @@ interface Project {
   subtitle: string;
   featured: boolean;
   type: 'Hobby' | 'Freelance' | 'Company';
+  companyId?: string;
   thumbnailUrl: string;
   imageUrl: string;
   iconUrl: string;
@@ -41,6 +42,20 @@ interface Project {
   order?: number;
 }
 
+interface Company {
+  id: string;
+  company: string;
+  position: string;
+  logoUrl: string;
+}
+
+interface Education {
+  id: string;
+  institution: string;
+  courseName: string;
+  logoUrl: string;
+}
+
 export default function FeaturedProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -53,10 +68,41 @@ export default function FeaturedProjects() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftStart, setScrollLeftStart] = useState(0);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [educations, setEducations] = useState<Education[]>([]);
 
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Helper function to get company/education data for a project
+  const getCompanyData = (project: Project) => {
+    if (project.type !== 'Company' || !project.companyId) return null;
+    
+    // Check if it's a company
+    const company = companies.find(c => c.id === project.companyId);
+    if (company) {
+      return {
+        type: 'company' as const,
+        name: company.company,
+        position: company.position,
+        logoUrl: company.logoUrl
+      };
+    }
+    
+    // Check if it's an education institution
+    const education = educations.find(e => e.id === project.companyId);
+    if (education) {
+      return {
+        type: 'education' as const,
+        name: `${education.institution} - ${education.courseName}`,
+        position: education.courseName,
+        logoUrl: education.logoUrl
+      };
+    }
+    
+    return null;
+  };
 
   // Scroll functions
   const checkScrollButtons = () => {
@@ -137,11 +183,30 @@ export default function FeaturedProjects() {
 
   const fetchProjects = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'projects'));
-      const projectData = querySnapshot.docs.map(doc => ({
+      // Fetch projects, companies, and education data
+      const [projectsSnapshot, companiesSnapshot, educationSnapshot] = await Promise.all([
+        getDocs(collection(db, 'projects')),
+        getDocs(collection(db, 'experiences')),
+        getDocs(collection(db, 'education'))
+      ]);
+
+      // Process projects
+      const projectData = projectsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
+      
+      // Process companies
+      const companyData = companiesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Company[];
+
+      // Process education
+      const educationData = educationSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Education[];
       
       // Filter featured projects and sort them
       const featuredProjects = projectData
@@ -154,6 +219,8 @@ export default function FeaturedProjects() {
         });
       
       setProjects(featuredProjects);
+      setCompanies(companyData);
+      setEducations(educationData);
       if (featuredProjects.length > 0) {
         setSelectedProject(featuredProjects[0]);
       }
@@ -242,7 +309,7 @@ export default function FeaturedProjects() {
           {/* Scrollable Container */}
           <div 
             ref={setScrollContainer}
-            className="overflow-x-auto scrollbar-hide pb-4 cursor-grab select-none"
+            className="overflow-x-auto overflow-y-hidden scrollbar-hide py-2 cursor-grab select-none"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none'
@@ -545,6 +612,31 @@ export default function FeaturedProjects() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Company/Education Information */}
+                  {selectedProject.type === 'Company' && getCompanyData(selectedProject) && (
+                    <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-4">
+                      <div className="flex items-center gap-3">
+                        {getCompanyData(selectedProject)?.logoUrl && (
+                          <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
+                            <img 
+                              src={getCompanyData(selectedProject)?.logoUrl}
+                              alt={getCompanyData(selectedProject)?.name}
+                              className="w-full h-full object-contain rounded"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-white font-semibold text-sm truncate">
+                            {getCompanyData(selectedProject)?.name}
+                          </h4>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {getCompanyData(selectedProject)?.position}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Tab Navigation */}
                   <div className="space-y-6">
