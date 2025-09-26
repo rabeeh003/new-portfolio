@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Plus, Edit, Trash2, Save, X, Briefcase, MapPin, Calendar, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Briefcase, MapPin, Calendar, GripVertical, ArrowUp, ArrowDown, Search, Filter, Grid, List, ExternalLink, Building2, Users, Star } from 'lucide-react';
 
 interface Experience {
   id?: string;
@@ -22,11 +22,19 @@ interface Experience {
   color: string;
 }
 
-export default function ExperienceManager() {
+interface ExperienceManagerProps {
+  onOpenModal: () => void;
+  onEditModal: (experience: Experience) => void;
+}
+
+export default function ExperienceManager({ onOpenModal, onEditModal }: ExperienceManagerProps) {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'Full-time' | 'Part-time' | 'Contract' | 'Freelance' | 'Internship'>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const [formData, setFormData] = useState<Experience>({
     company: '',
@@ -200,55 +208,105 @@ export default function ExperienceManager() {
     return <div className="text-white">Loading experiences...</div>;
   }
 
+  // Filter experiences based on search and filter
+  const filteredExperiences = experiences.filter(experience => {
+    const matchesSearch = experience.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         experience.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         experience.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'all' || experience.type === filterType;
+    return matchesSearch && matchesFilter;
+  });
+
   return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white">Experience Management</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">Experience Management</h2>
+          <p className="text-gray-400">Manage your work experience and professional background</p>
+        </div>
         <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+          onClick={onOpenModal}
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl transition-all shadow-lg hover:shadow-blue-500/25"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           Add Experience
         </button>
       </div>
 
-      {/* Experience List */}
-      <div className="space-y-4 mb-8">
-        {experiences.map((experience, index) => (
-          <div
-            key={experience.id}
-            className="bg-gray-800 border border-gray-700 rounded-lg p-6"
+      {/* Filters and Search */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Search */}
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search experiences..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+          />
+        </div>
+
+        {/* Filter */}
+        <div className="flex gap-2">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value as any)}
+            className="px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
           >
-            <div className="flex justify-between items-start">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="flex flex-col gap-1 mt-2">
+            <option value="all">All Types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Internship">Internship</option>
+          </select>
+
+          {/* View Mode Toggle */}
+          <div className="flex bg-gray-800/50 border border-gray-600/50 rounded-xl p-1">
                   <button
-                    onClick={() => moveUp(index)}
-                    disabled={index === 0}
-                    className={`p-1 rounded ${
-                      index === 0 
-                        ? 'text-gray-600 cursor-not-allowed' 
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    <ArrowUp className="w-4 h-4" />
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg transition-all ${
+                viewMode === 'grid' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Grid className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => moveDown(index)}
-                    disabled={index === experiences.length - 1}
-                    className={`p-1 rounded ${
-                      index === experiences.length - 1 
-                        ? 'text-gray-600 cursor-not-allowed' 
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    <ArrowDown className="w-4 h-4" />
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg transition-all ${
+                viewMode === 'list' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <List className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center p-2">
+        </div>
+      </div>
+
+      {/* Experience List */}
+      <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'} mb-8`}>
+        {filteredExperiences.map((experience, index) => {
+          const originalIndex = experiences.findIndex(e => e.id === experience.id);
+          return (
+            <div
+              key={experience.id}
+              className={`bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden transition-all hover:shadow-xl hover:shadow-blue-500/10 ${
+                viewMode === 'grid' ? 'p-6' : 'p-4'
+              }`}
+            >
+              {viewMode === 'grid' ? (
+                // Grid View
+                <div className="space-y-4">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center p-3 shadow-lg">
                       <img 
                         src={experience.logoUrl || '/api/placeholder/64/64'} 
                         alt={experience.company}
@@ -256,9 +314,9 @@ export default function ExperienceManager() {
                       />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-white">{experience.company}</h3>
-                      <p className="text-purple-400 font-medium">{experience.position}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+                        <h3 className="text-xl font-bold text-white">{experience.company}</h3>
+                        <p className="text-blue-400 font-semibold">{experience.position}</p>
+                        <div className="flex items-center gap-3 text-sm text-gray-400 mt-1">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           {experience.duration}
@@ -267,301 +325,207 @@ export default function ExperienceManager() {
                           <MapPin className="w-4 h-4" />
                           {experience.location}
                         </div>
-                        <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs">
-                          {experience.projectsCount}+ Projects
-                        </span>
+                        </div>
                       </div>
                     </div>
+                    
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => onEditModal(experience)}
+                        className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(experience.id!)}
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      experience.type === 'Full-time' 
+                        ? 'bg-green-500/20 text-green-400'
+                        : experience.type === 'Part-time'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : experience.type === 'Contract'
+                        ? 'bg-purple-500/20 text-purple-400'
+                        : experience.type === 'Freelance'
+                        ? 'bg-orange-500/20 text-orange-400'
+                        : 'bg-gray-500/20 text-gray-400'
+                    }`}>
+                      {experience.type}
+                    </span>
+                    <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                      <Building2 className="w-3 h-3" />
+                      {experience.projectsCount}+ Projects
+                    </span>
                   </div>
                   
-                  <p className="text-gray-300 mb-4">{experience.description}</p>
+                  {/* Description */}
+                  <p className="text-gray-300 text-sm line-clamp-3">{experience.description}</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Responsibilities Preview */}
                     <div>
-                      <h4 className="text-sm font-semibold text-purple-400 mb-2 uppercase tracking-wide">
-                        Responsibilities
+                    <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      Key Responsibilities
                       </h4>
                       <div className="space-y-1">
-                        {experience.responsibilities.slice(0, 3).map((responsibility, idx) => (
+                      {experience.responsibilities.slice(0, 2).map((responsibility, idx) => (
                           <div key={idx} className="flex items-start gap-2 text-gray-300 text-sm">
-                            <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <p>{responsibility}</p>
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="line-clamp-1">{responsibility}</p>
                           </div>
                         ))}
-                        {experience.responsibilities.length > 3 && (
-                          <p className="text-gray-500 text-xs">+{experience.responsibilities.length - 3} more</p>
+                      {experience.responsibilities.length > 2 && (
+                        <p className="text-gray-500 text-xs">+{experience.responsibilities.length - 2} more responsibilities</p>
                         )}
                       </div>
                     </div>
                     
+                  {/* Technologies */}
                     <div>
-                      <h4 className="text-sm font-semibold text-purple-400 mb-2 uppercase tracking-wide">
-                        Technologies
-                      </h4>
+                    <h4 className="text-sm font-semibold text-blue-400 mb-2">Technologies</h4>
                       <div className="flex flex-wrap gap-1">
-                        {experience.technologies.slice(0, 6).map((tech, idx) => (
+                      {experience.technologies.slice(0, 4).map((tech, idx) => (
                           <span 
                             key={idx}
-                            className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs text-gray-300"
+                          className="px-2 py-1 bg-gray-700/50 border border-gray-600/50 rounded-lg text-xs text-gray-300"
                           >
                             {tech}
                           </span>
                         ))}
-                        {experience.technologies.length > 6 && (
-                          <span className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs text-gray-500">
-                            +{experience.technologies.length - 6}
+                      {experience.technologies.length > 4 && (
+                        <span className="px-2 py-1 bg-gray-700/50 border border-gray-600/50 rounded-lg text-xs text-gray-500">
+                          +{experience.technologies.length - 4}
                           </span>
                         )}
-                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(experience)}
-                  className="p-2 text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  <Edit className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(experience.id!)}
-                  className="p-2 text-red-400 hover:text-red-300 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {/* Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white">
-                {editingId ? 'Edit Experience' : 'Add New Experience'}
-              </h3>
-              <button
-                onClick={resetForm}
-                className="text-gray-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
+                  {/* Website Link */}
+                  {experience.websiteUrl && (
+                    <a
+                      href={experience.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-all text-sm"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Visit Company Website
+                    </a>
+                  )}
+                </div>
+              ) : (
+                // List View
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-1">
+                <button
+                      onClick={() => moveUp(originalIndex)}
+                      disabled={originalIndex === 0}
+                      className={`p-2 rounded-lg transition-all ${
+                        originalIndex === 0 
+                          ? 'text-gray-600 cursor-not-allowed bg-gray-800/30' 
+                          : 'text-gray-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/50'
+                      } border border-gray-600/30`}
+                      title="Move up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                </button>
+                <button
+                      onClick={() => moveDown(originalIndex)}
+                      disabled={originalIndex === experiences.length - 1}
+                      className={`p-2 rounded-lg transition-all ${
+                        originalIndex === experiences.length - 1 
+                          ? 'text-gray-600 cursor-not-allowed bg-gray-800/30' 
+                          : 'text-gray-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/50'
+                      } border border-gray-600/30`}
+                      title="Move down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Company</label>
-                  <input
-                    type="text"
-                    value={formData.company}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Position</label>
-                  <input
-                    type="text"
-                    value={formData.position}
-                    onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Duration</label>
-                  <input
-                    type="text"
-                    value={formData.duration}
-                    onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="e.g., Jan 2020 - Present"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Location</label>
-                  <input
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="e.g., Remote, New York"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  >
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Freelance">Freelance</option>
-                    <option value="Internship">Internship</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Logo URL</label>
-                  <input
-                    type="url"
-                    value={formData.logoUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, logoUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://example.com/logo.png"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Website URL</label>
-                  <input
-                    type="url"
-                    value={formData.websiteUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, websiteUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://company.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Projects Count</label>
-                  <input
-                    type="number"
-                    value={formData.projectsCount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, projectsCount: parseInt(e.target.value) || 0 }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    min="0"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Responsibilities</label>
-                {formData.responsibilities.map((responsibility, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={responsibility}
-                      onChange={(e) => updateArrayField('responsibilities', index, e.target.value)}
-                      className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                      placeholder="Enter responsibility"
+                  <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center p-3 flex-shrink-0 shadow-lg">
+                    <img 
+                      src={experience.logoUrl || '/api/placeholder/64/64'} 
+                      alt={experience.company}
+                      className="w-full h-full object-contain rounded-lg"
                     />
-                    {formData.responsibilities.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeArrayField('responsibilities', index)}
-                        className="px-3 py-2 text-red-400 hover:text-red-300"
+              </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-bold text-white truncate">{experience.company}</h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        experience.type === 'Full-time' 
+                          ? 'bg-green-500/20 text-green-400'
+                          : experience.type === 'Part-time'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : experience.type === 'Contract'
+                          ? 'bg-purple-500/20 text-purple-400'
+                          : experience.type === 'Freelance'
+                          ? 'bg-orange-500/20 text-orange-400'
+                          : 'bg-gray-500/20 text-gray-400'
+                      }`}>
+                        {experience.type}
+                      </span>
+                      <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs font-medium">
+                        {experience.projectsCount}+ Projects
+                      </span>
+                </div>
+                    <p className="text-blue-400 font-semibold text-sm mb-1">{experience.position}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-400 mb-2">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {experience.duration}
+                </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        {experience.location}
+                </div>
+              </div>
+                    <p className="text-gray-300 text-sm line-clamp-1">{experience.description}</p>
+              </div>
+
+                  <div className="flex items-center gap-2">
+                    {experience.websiteUrl && (
+                      <a
+                        href={experience.websiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                       >
-                        <X className="w-4 h-4" />
-                      </button>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
                     )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addArrayField('responsibilities')}
-                  className="text-purple-400 hover:text-purple-300 text-sm"
-                >
-                  + Add Responsibility
-                </button>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Technologies</label>
-                {formData.technologies.map((tech, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={tech}
-                      onChange={(e) => updateArrayField('technologies', index, e.target.value)}
-                      className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                      placeholder="Enter technology"
-                    />
-                    {formData.technologies.length > 1 && (
+                    
+                    <div className="flex gap-1">
                       <button
-                        type="button"
-                        onClick={() => removeArrayField('technologies', index)}
-                        className="px-3 py-2 text-red-400 hover:text-red-300"
+                        onClick={() => onEditModal(experience)}
+                        className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                       >
-                        <X className="w-4 h-4" />
+                        <Edit className="w-4 h-4" />
                       </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addArrayField('technologies')}
-                  className="text-purple-400 hover:text-purple-300 text-sm"
-                >
-                  + Add Technology
-                </button>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Color Theme</label>
-                <select
-                  value={formData.color}
-                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                >
-                  <option value="from-purple-500 to-blue-500">Purple to Blue</option>
-                  <option value="from-blue-500 to-cyan-500">Blue to Cyan</option>
-                  <option value="from-cyan-500 to-teal-500">Cyan to Teal</option>
-                  <option value="from-teal-500 to-green-500">Teal to Green</option>
-                  <option value="from-green-500 to-yellow-500">Green to Yellow</option>
-                  <option value="from-yellow-500 to-orange-500">Yellow to Orange</option>
-                  <option value="from-orange-500 to-red-500">Orange to Red</option>
-                  <option value="from-red-500 to-pink-500">Red to Pink</option>
-                </select>
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                >
-                  <Save className="w-4 h-4" />
-                  {editingId ? 'Update' : 'Save'}
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+                      <button
+                        onClick={() => handleDelete(experience.id!)}
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
           </div>
         </div>
       )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

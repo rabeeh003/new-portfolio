@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Plus, Edit, Trash2, Save, X, ExternalLink, Github, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ExternalLink, Github, ArrowUp, ArrowDown, Filter, Search, Grid, List, Eye, Calendar, Tag, Star } from 'lucide-react';
 
 interface Project {
   id?: string;
@@ -44,7 +44,12 @@ interface CompanyOption {
   type: 'company' | 'course';
 }
 
-export default function ProjectManager() {
+interface ProjectManagerProps {
+  onOpenModal: () => void;
+  onEditModal: (project: Project) => void;
+}
+
+export default function ProjectManager({ onOpenModal, onEditModal }: ProjectManagerProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [educations, setEducations] = useState<Education[]>([]);
@@ -52,6 +57,9 @@ export default function ProjectManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'Hobby' | 'Freelance' | 'Company'>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const [formData, setFormData] = useState<Project>({
     title: '',
@@ -74,9 +82,22 @@ export default function ProjectManager() {
   });
 
   useEffect(() => {
-    fetchProjects();
-    fetchExperiences();
-    fetchEducations();
+    const fetchAllData = async () => {
+      try {
+        const [experienceData, educationData] = await Promise.all([
+          fetchExperiences(),
+          fetchEducations()
+        ]);
+        updateCompanyOptions(experienceData, educationData);
+        await fetchProjects();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchAllData();
   }, []);
 
   const fetchExperiences = async () => {
@@ -86,10 +107,12 @@ export default function ProjectManager() {
         id: doc.id,
         company: doc.data().company
       })) as Experience[];
+      console.log('Fetched experiences:', experienceData);
       setExperiences(experienceData);
-      updateCompanyOptions(experienceData, educations);
+      return experienceData;
     } catch (error) {
       console.error('Error fetching experiences:', error);
+      return [];
     }
   };
 
@@ -101,14 +124,17 @@ export default function ProjectManager() {
         institution: doc.data().institution,
         courseName: doc.data().courseName
       })) as Education[];
+      console.log('Fetched educations:', educationData);
       setEducations(educationData);
-      updateCompanyOptions(experiences, educationData);
+      return educationData;
     } catch (error) {
       console.error('Error fetching education:', error);
+      return [];
     }
   };
 
   const updateCompanyOptions = (expData: Experience[], eduData: Education[]) => {
+    console.log('Updating company options with:', { expData, eduData });
     const options: CompanyOption[] = [
       ...expData.map(exp => ({
         id: exp.id,
@@ -117,10 +143,11 @@ export default function ProjectManager() {
       })),
       ...eduData.map(edu => ({
         id: edu.id,
-        name: `${edu.institution} / ${edu.courseName}`,
+        name: `${edu.institution} - ${edu.courseName}`,
         type: 'course' as const
       }))
     ];
+    console.log('Final company options:', options);
     setCompanyOptions(options);
   };
   const fetchProjects = async () => {
@@ -142,8 +169,6 @@ export default function ProjectManager() {
       setProjects(sortedProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -170,7 +195,7 @@ export default function ProjectManager() {
       alert('Project saved successfully!');
     } catch (error) {
       console.error('Error saving project:', error);
-      alert('Error saving project: ' + error.message);
+      alert('Error saving project: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setLoading(false);
     }
@@ -281,72 +306,147 @@ export default function ProjectManager() {
     return <div className="text-white">Loading projects...</div>;
   }
 
+  // Debug log
+  console.log('ProjectManager render - companyOptions:', companyOptions);
+
+  // Filter projects based on search and filter
+  const filteredProjects = projects.filter(project => {
+    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'all' || project.type === filterType;
+    return matchesSearch && matchesFilter;
+  });
+
   return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white">Project Management</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">Project Management</h2>
+          <p className="text-gray-400">Manage your portfolio projects</p>
+        </div>
         <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+          onClick={onOpenModal}
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all shadow-lg hover:shadow-purple-500/25"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           Add Project
         </button>
       </div>
 
-      {/* Project List */}
-      <div className="space-y-4 mb-8">
-        {projects.map((project, index) => (
-          <div
-            key={project.id}
-            className="bg-gray-800 border border-gray-700 rounded-lg p-4"
+      {/* Filters and Search */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Search */}
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+          />
+        </div>
+
+        {/* Filter */}
+        <div className="flex gap-2">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value as any)}
+            className="px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
           >
-            <div className="flex justify-between items-start">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="flex flex-col gap-1 mt-2">
+            <option value="all">All Types</option>
+            <option value="Hobby">Hobby</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Company">Company</option>
+          </select>
+
+          {/* View Mode Toggle */}
+          <div className="flex bg-gray-800/50 border border-gray-600/50 rounded-xl p-1">
                   <button
-                    onClick={() => moveUp(index)}
-                    disabled={index === 0}
-                    className={`p-1 rounded ${
-                      index === 0 
-                        ? 'text-gray-600 cursor-not-allowed' 
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    <ArrowUp className="w-4 h-4" />
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg transition-all ${
+                viewMode === 'grid' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Grid className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => moveDown(index)}
-                    disabled={index === projects.length - 1}
-                    className={`p-1 rounded ${
-                      index === projects.length - 1 
-                        ? 'text-gray-600 cursor-not-allowed' 
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    <ArrowDown className="w-4 h-4" />
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg transition-all ${
+                viewMode === 'list' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <List className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+        </div>
+      </div>
+
+      {/* Project List */}
+      <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'} mb-8`}>
+        {filteredProjects.map((project, index) => {
+          const originalIndex = projects.findIndex(p => p.id === project.id);
+          return (
+            <div
+              key={project.id}
+              className={`bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden transition-all hover:shadow-xl hover:shadow-purple-500/10 ${
+                viewMode === 'grid' ? 'p-6' : 'p-4'
+              }`}
+            >
+              {viewMode === 'grid' ? (
+                // Grid View
+                <div className="space-y-4">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
                   {project.thumbnailUrl ? (
                     <img 
                       src={project.thumbnailUrl} 
                       alt={project.title}
-                      className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-cover rounded-xl"
                     />
                   ) : (
-                    <span className="text-2xl">💻</span>
+                          <span className="text-xl">💻</span>
                   )}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">{project.title}</h3>
+                        <p className="text-gray-400 text-sm">{project.subtitle}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => onEditModal(project)}
+                        className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project.id!)}
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
                     {project.featured && (
-                      <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs font-semibold">
+                      <span className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                        <Star className="w-3 h-3" />
                         Featured
                       </span>
                     )}
-                    <span className={`px-2 py-1 rounded-full text-xs ${
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       project.type === 'Hobby' 
                         ? 'bg-blue-500/20 text-blue-400'
                         : project.type === 'Freelance'
@@ -355,7 +455,7 @@ export default function ProjectManager() {
                     }`}>
                       {project.type}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       project.status === 'Live' 
                         ? 'bg-green-500/20 text-green-400' 
                         : project.status === 'Under Construction'
@@ -365,9 +465,108 @@ export default function ProjectManager() {
                       {project.status}
                     </span>
                   </div>
-                  <p className="text-gray-400 text-sm mb-2">{project.subtitle}</p>
-                  <p className="text-gray-300 text-sm line-clamp-2">{project.story}</p>
+
+                  {/* Description */}
+                  <p className="text-gray-300 text-sm line-clamp-3">{project.story}</p>
+
+                  {/* Links */}
+                  <div className="flex gap-2">
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-all text-sm"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Live Demo
+                      </a>
+                    )}
+                    {project.repoUrl && (
+                      <a
+                        href={project.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 bg-gray-700/50 text-gray-400 hover:text-gray-300 hover:bg-gray-700/70 rounded-lg transition-all text-sm"
+                      >
+                        <Github className="w-4 h-4" />
+                        Code
+                      </a>
+                    )}
+                  </div>
                 </div>
+              ) : (
+                // List View
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-1">
+                    <button
+                      onClick={() => moveUp(originalIndex)}
+                      disabled={originalIndex === 0}
+                      className={`p-2 rounded-lg transition-all ${
+                        originalIndex === 0 
+                          ? 'text-gray-600 cursor-not-allowed bg-gray-800/30' 
+                          : 'text-gray-400 hover:text-white hover:bg-purple-500/20 hover:border-purple-500/50'
+                      } border border-gray-600/30`}
+                      title="Move up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => moveDown(originalIndex)}
+                      disabled={originalIndex === projects.length - 1}
+                      className={`p-2 rounded-lg transition-all ${
+                        originalIndex === projects.length - 1 
+                          ? 'text-gray-600 cursor-not-allowed bg-gray-800/30' 
+                          : 'text-gray-400 hover:text-white hover:bg-purple-500/20 hover:border-purple-500/50'
+                      } border border-gray-600/30`}
+                      title="Move down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    {project.thumbnailUrl ? (
+                      <img 
+                        src={project.thumbnailUrl} 
+                        alt={project.title}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                    ) : (
+                      <span className="text-2xl">💻</span>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-bold text-white truncate">{project.title}</h3>
+                      {project.featured && (
+                        <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                          <Star className="w-3 h-3" />
+                          Featured
+                        </span>
+                      )}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        project.type === 'Hobby' 
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : project.type === 'Freelance'
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-orange-500/20 text-orange-400'
+                      }`}>
+                        {project.type}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        project.status === 'Live' 
+                          ? 'bg-green-500/20 text-green-400' 
+                          : project.status === 'Under Construction'
+                          ? 'bg-yellow-500/20 text-yellow-400'
+                          : 'bg-blue-500/20 text-blue-400'
+                      }`}>
+                        {project.status}
+                      </span>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-1">{project.subtitle}</p>
+                    <p className="text-gray-300 text-sm line-clamp-1">{project.story}</p>
               </div>
               
               <div className="flex items-center gap-2">
@@ -377,7 +576,7 @@ export default function ProjectManager() {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1 text-blue-400 hover:text-blue-300"
+                          className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
@@ -387,318 +586,35 @@ export default function ProjectManager() {
                       href={project.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1 text-gray-400 hover:text-gray-300"
+                          className="p-2 text-gray-400 hover:text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all"
                     >
                       <Github className="w-4 h-4" />
                     </a>
                   )}
                 </div>
                 
-                <div className="flex gap-2">
+                    <div className="flex gap-1">
                   <button
-                    onClick={() => handleEdit(project)}
-                    className="p-1 text-blue-400 hover:text-blue-300 transition-colors"
+                    onClick={() => onEditModal(project)}
+                        className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(project.id!)}
-                    className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             </div>
+              )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white">
-                {editingId ? 'Edit Project' : 'Add New Project'}
-              </h3>
-              <button
-                onClick={resetForm}
-                className="text-gray-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as Project['status'] }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  >
-                    <option value="Live">Live</option>
-                    <option value="Under Construction">Under Construction</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Featured</label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.featured}
-                      onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                      className="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
-                    />
-                    <label className="ml-2 text-sm text-gray-300">Mark as featured project</label>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Project Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      type: e.target.value as Project['type'],
-                      companyId: e.target.value !== 'Company' ? '' : prev.companyId
-                    }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  >
-                    <option value="Hobby">Hobby</option>
-                    <option value="Freelance">Freelance</option>
-                    <option value="Company">Company</option>
-                  </select>
-                </div>
-                {formData.type === 'Company' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Select Company</label>
-                    <select
-                      value={formData.companyId}
-                      onChange={(e) => setFormData(prev => ({ ...prev, companyId: e.target.value }))}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                      required={formData.type === 'Company'}
-                    >
-                      <option value="">Select a company or course</option>
-                      {companyOptions.map((option) => (
-                        <option key={option.id} value={option.id}>
-                          {option.name} ({option.type === 'company' ? 'Company' : 'Course'})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
-                <input
-                  type="text"
-                  value={formData.subtitle}
-                  onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Thumbnail URL</label>
-                  <input
-                    type="url"
-                    value={formData.thumbnailUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://example.com/thumbnail.jpg"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Main Image URL</label>
-                  <input
-                    type="url"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://example.com/main-image.jpg"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Icon URL</label>
-                  <input
-                    type="url"
-                    value={formData.iconUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, iconUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://example.com/icon.png"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Live URL</label>
-                  <input
-                    type="url"
-                    value={formData.liveUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, liveUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Repository URL</label>
-                  <input
-                    type="url"
-                    value={formData.repoUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, repoUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://github.com/username/repo"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Play Store URL</label>
-                  <input
-                    type="url"
-                    value={formData.playstoreUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, playstoreUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://play.google.com/store/apps/details?id=..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">App Store URL</label>
-                  <input
-                    type="url"
-                    value={formData.appstoreUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, appstoreUrl: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    placeholder="https://apps.apple.com/app/..."
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Story</label>
-                  <textarea
-                    value={formData.story}
-                    onChange={(e) => setFormData(prev => ({ ...prev, story: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    rows={4}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                    rows={4}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Features</label>
-                {formData.features.map((feature, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={feature}
-                      onChange={(e) => updateArrayField('features', index, e.target.value)}
-                      className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                      placeholder="Enter feature"
-                    />
-                    {formData.features.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeArrayField('features', index)}
-                        className="px-3 py-2 text-red-400 hover:text-red-300"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addArrayField('features')}
-                  className="text-purple-400 hover:text-purple-300 text-sm"
-                >
-                  + Add Feature
-                </button>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Technologies</label>
-                {formData.tech.map((tech, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={tech}
-                      onChange={(e) => updateArrayField('tech', index, e.target.value)}
-                      className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                      placeholder="Enter technology"
-                    />
-                    {formData.tech.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeArrayField('tech', index)}
-                        className="px-3 py-2 text-red-400 hover:text-red-300"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addArrayField('tech')}
-                  className="text-purple-400 hover:text-purple-300 text-sm"
-                >
-                  + Add Technology
-                </button>
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                >
-                  <Save className="w-4 h-4" />
-                  {editingId ? 'Update' : 'Save'}
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
