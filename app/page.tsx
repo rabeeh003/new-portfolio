@@ -3,6 +3,63 @@ import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import Footer from '@/components/Footer';
+import type { Metadata } from 'next';
+
+// SEO Metadata for home page
+export const metadata: Metadata = {
+  title: 'Rabeeh PK - Full Stack Developer | Web, Mobile & Desktop Apps',
+  description: 'Rabeeh PK is a skilled full-stack developer from Kerala, India. Specializing in web applications, mobile apps, desktop applications, and backend systems. Expert in React, Next.js, Node.js, Python, and modern development technologies.',
+  keywords: [
+    'Rabeeh PK',
+    'Rabeeh',
+    'Muhammed Rabeeh',
+    'Muhammed Rabeeh pk',
+    'Muhammed',
+    'Full Stack Developer Kerala',
+    'Web Developer India',
+    'Mobile App Developer',
+    'Desktop App Developer',
+    'Backend Developer',
+    'React Developer Kerala',
+    'Next.js Developer',
+    'Node.js Developer',
+    'Python Developer',
+    'Software Engineer Kerala',
+    'Portfolio Website',
+    'Web Applications',
+    'Mobile Applications',
+    'Desktop Applications',
+    'Backend Systems',
+    'API Development',
+    'Database Design',
+    'Cloud Computing',
+    'DevOps',
+    'UI/UX Design',
+    'Frontend Development',
+    'Backend Development'
+  ],
+  openGraph: {
+    title: 'Rabeeh PK - Full Stack Developer | Web, Mobile & Desktop Apps',
+    description: 'Rabeeh PK is a skilled full-stack developer from Kerala, India. Specializing in web applications, mobile apps, desktop applications, and backend systems.',
+    images: [
+      {
+        url: '/rabeeh.png',
+        width: 1200,
+        height: 630,
+        alt: 'Rabeeh PK - Full Stack Developer from Kerala, India',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rabeeh PK - Full Stack Developer | Web, Mobile & Desktop Apps',
+    description: 'Rabeeh PK is a skilled full-stack developer from Kerala, India. Specializing in web applications, mobile apps, desktop applications, and backend systems.',
+    images: ['/rabeeh.png'],
+  },
+  alternates: {
+    canonical: 'https://rabeeh.verce.app',
+  },
+};
 
 // Dynamic imports for better code splitting
 const FeaturedProjects = dynamic(() => import('@/components/FeaturedProjects'), {

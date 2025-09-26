@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/admin/',
     },
-    sitemap: 'https://yourdomain.com/sitemap.xml', // Replace with your actual domain
+    sitemap: 'https://rabeehpk.dev/sitemap.xml',
   }
 }

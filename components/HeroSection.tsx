@@ -71,6 +71,54 @@ export default function HeroSection() {
             Crafting seamless digital experiences across web, mobile, and desktop with modern tech stacks and a passion for innovation.
           </p>
 
+          {/* SEO Content - Hidden from users, visible to search engines */}
+          <div className="sr-only">
+            <h1>Rabeeh PK - Full Stack Developer from Kerala, India</h1>
+            <h2>Full Stack Developer specializing in Web, Mobile & Desktop Applications</h2>
+            <p>
+              I'm a passionate full-stack developer from Kerala, India, specializing in building modern web applications, 
+              mobile apps, desktop applications, and robust backend systems. With expertise in React, Next.js, Node.js, 
+              Python, and cloud technologies, I create scalable solutions that drive business growth and enhance user experiences.
+            </p>
+            
+            <h3>Core Expertise</h3>
+            <ul>
+              <li>Web Development</li>
+              <li>Mobile Apps</li>
+              <li>Desktop Apps</li>
+              <li>Backend Systems</li>
+              <li>React & Next.js</li>
+              <li>Node.js</li>
+              <li>Python</li>
+              <li>JavaScript/TypeScript</li>
+              <li>API Development</li>
+              <li>Database Design</li>
+              <li>Cloud Computing</li>
+              <li>DevOps</li>
+              <li>UI/UX Design</li>
+              <li>Full Stack Development</li>
+              <li>Software Architecture</li>
+            </ul>
+
+            <h3>About Me</h3>
+            <p>
+              Based in Kerala, India, I'm a dedicated full-stack developer with a passion for creating innovative 
+              digital solutions. My journey in software development spans across multiple domains, from crafting 
+              responsive web applications to building cross-platform mobile apps and desktop software.
+            </p>
+            <p>
+              I specialize in modern web technologies including React, Next.js, and Node.js for frontend and backend 
+              development. My expertise extends to mobile app development using React Native and Flutter, desktop 
+              application development with Electron and native frameworks, and robust backend systems using Python, 
+              Node.js, and various databases.
+            </p>
+            <p>
+              With a strong foundation in software architecture, API design, cloud computing, and DevOps practices, 
+              I deliver scalable, maintainable, and high-performance applications that meet business objectives and 
+              exceed user expectations.
+            </p>
+          </div>
+
           {/* Navigation Buttons */}
           {/* <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
             {[
