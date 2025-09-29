@@ -944,7 +944,7 @@ export default function Dashboard() {
                   >
                     <option value="Live">Live</option>
                     <option value="Under Construction">Under Construction</option>
-                    <option value="Completed">Stoped</option>
+                    <option value="Stoped">Stoped</option>
                     <option value="Completed">Completed</option>
                   </select>
                 </div>
