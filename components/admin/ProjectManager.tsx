@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Plus, Edit, Trash2, Save, X, ExternalLink, Github, ArrowUp, ArrowDown, Filter, Search, Grid, List, Eye, Calendar, Tag, Star } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ExternalLink, Github, ArrowUp, ArrowDown, Filter, Search, Grid, List, Eye, Calendar, Tag, Star, EyeOff } from 'lucide-react';
 
 interface Project {
   id?: string;
@@ -11,6 +11,7 @@ interface Project {
   title: string;
   subtitle: string;
   featured: boolean;
+  published: boolean;
   type: 'Hobby' | 'Freelance' | 'Company';
   companyId?: string;
   description: string;
@@ -65,6 +66,7 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
     title: '',
     subtitle: '',
     featured: false,
+    published: true,
     type: 'Hobby',
     companyId: '',
     description: '',
@@ -251,6 +253,17 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
     }
   };
 
+  const togglePublished = async (id: string, currentPublished: boolean) => {
+    try {
+      await updateDoc(doc(db, 'projects', id), {
+        published: !currentPublished
+      });
+      fetchProjects();
+    } catch (error) {
+      console.error('Error updating published status:', error);
+    }
+  };
+
   const handleEdit = (project: Project) => {
     setFormData(project);
     setEditingId(project.id || null);
@@ -262,6 +275,7 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
       title: '',
       subtitle: '',
       featured: false,
+      published: true,
       type: 'Hobby',
       companyId: '',
       description: '',
@@ -424,6 +438,17 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
                     
                     <div className="flex gap-1">
                       <button
+                        onClick={() => togglePublished(project.id!, project.published)}
+                        className={`p-2 rounded-lg transition-all ${
+                          project.published 
+                            ? 'text-green-400 hover:text-green-300 hover:bg-green-500/10' 
+                            : 'text-gray-400 hover:text-gray-300 hover:bg-gray-500/10'
+                        }`}
+                        title={project.published ? 'Hide from frontend' : 'Show on frontend'}
+                      >
+                        {project.published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                      <button
                         onClick={() => onEditModal(project)}
                         className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                       >
@@ -440,6 +465,14 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
 
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
+                      project.published 
+                        ? 'bg-green-500/20 text-green-400' 
+                        : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {project.published ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      {project.published ? 'Published' : 'Hidden'}
+                    </span>
                     {project.featured && (
                       <span className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                         <Star className="w-3 h-3" />
@@ -540,6 +573,14 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-bold text-white truncate">{project.title}</h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
+                        project.published 
+                          ? 'bg-green-500/20 text-green-400' 
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {project.published ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        {project.published ? 'Published' : 'Hidden'}
+                      </span>
                       {project.featured && (
                         <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                           <Star className="w-3 h-3" />
@@ -594,6 +635,17 @@ export default function ProjectManager({ onOpenModal, onEditModal }: ProjectMana
                 </div>
                 
                     <div className="flex gap-1">
+                  <button
+                    onClick={() => togglePublished(project.id!, project.published)}
+                    className={`p-2 rounded-lg transition-all ${
+                      project.published 
+                        ? 'text-green-400 hover:text-green-300 hover:bg-green-500/10' 
+                        : 'text-gray-400 hover:text-gray-300 hover:bg-gray-500/10'
+                    }`}
+                    title={project.published ? 'Hide from frontend' : 'Show on frontend'}
+                  >
+                    {project.published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
                   <button
                     onClick={() => onEditModal(project)}
                         className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"

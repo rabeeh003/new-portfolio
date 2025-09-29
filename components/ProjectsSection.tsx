@@ -11,6 +11,7 @@ interface Project {
   title: string;
   subtitle: string;
   featured: boolean;
+  published: boolean;
   type: 'Hobby' | 'Freelance' | 'Company';
   companyId?: string;
   thumbnailUrl: string;

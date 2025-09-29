@@ -14,6 +14,7 @@ interface Project {
   title: string;
   subtitle: string;
   featured: boolean;
+  published: boolean;
   type: 'Hobby' | 'Freelance' | 'Company';
   thumbnailUrl: string;
   imageUrl: string;
@@ -74,15 +75,22 @@ export default function ProjectsPage() {
         ...doc.data()
       })) as Project[];
 
+      // Filter only published projects (default to true if published field doesn't exist)
+      const publishedProjects = projectData.filter(project => {
+        // If published field doesn't exist, treat as published (true)
+        // If published field exists, only show if it's true
+        return project.published === undefined || project.published === true;
+      });
+
       // Extract unique tech stack items
       const techSet = new Set<string>();
-      projectData.forEach(project => {
+      publishedProjects.forEach(project => {
         project.tech.forEach(tech => techSet.add(tech));
       });
       setAvailableTech(Array.from(techSet).sort());
 
       // Sort projects by featured first, then by order
-      const sortedProjects = projectData.sort((a, b) => {
+      const sortedProjects = publishedProjects.sort((a, b) => {
         if (a.featured && !b.featured) return -1;
         if (!a.featured && b.featured) return 1;
         if (a.order !== undefined && b.order !== undefined) return a.order - b.order;

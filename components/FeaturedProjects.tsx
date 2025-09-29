@@ -26,6 +26,7 @@ interface Project {
   title: string;
   subtitle: string;
   featured: boolean;
+  published: boolean;
   type: 'Hobby' | 'Freelance' | 'Company';
   companyId?: string;
   thumbnailUrl: string;
@@ -208,9 +209,9 @@ export default function FeaturedProjects() {
         ...doc.data()
       })) as Education[];
       
-      // Filter featured projects and sort them
+      // Filter featured and published projects and sort them
       const featuredProjects = projectData
-        .filter(p => p.featured)
+        .filter(p => p.featured && p.published !== false)
         .sort((a, b) => {
           if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
           if (a.order !== undefined) return -1;
