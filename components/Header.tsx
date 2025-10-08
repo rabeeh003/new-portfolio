@@ -90,8 +90,8 @@ export default function Header() {
   const socialLinks = [
     { icon: Github, href: 'https://github.com/rabeeh003', label: 'GitHub', color: 'hover:text-gray-300' },
     { icon: Linkedin, href: 'https://www.linkedin.com/in/rabeeh-pk/', label: 'LinkedIn', color: 'hover:text-blue-400' },
-    { icon: Instagram, href: 'https://instagram.com/yourusername', label: 'Instagram', color: 'hover:text-pink-400' },
-    { icon: Facebook, href: 'https://facebook.com/yourusername', label: 'Facebook', color: 'hover:text-blue-500' },
+    { icon: Instagram, href: 'https://www.instagram.com/rabeeh_pk_/', label: 'Instagram', color: 'hover:text-pink-400' },
+    { icon: Facebook, href: 'https://www.instagram.com/rabeeh_pk_/', label: 'Facebook', color: 'hover:text-blue-500' },
     { icon: MessageCircle, href: 'https://wa.me/917994779605', label: 'WhatsApp', color: 'hover:text-green-400' },
   ];
 
