@@ -2,7 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
@@ -13,6 +13,8 @@ export const metadata: Metadata = {
     default: 'Rabeeh PK - Full Stack Developer | Web, Mobile & Desktop Apps',
     template: '%s | Rabeeh PK - Full Stack Developer'
   },
+
+
   description: 'Rabeeh PK is a skilled full-stack developer from Kerala, India. Specializing in web applications, mobile apps, desktop applications, and backend systems. Expert in React, Next.js, Node.js, Python, and modern development technologies.',
   keywords: [
     'Rabeeh PK',
@@ -112,17 +114,17 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Rabeeh PK Portfolio" />
-        
+
         {/* Favicon and Icons */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
@@ -147,7 +149,7 @@ export default function RootLayout({
               },
               "knowsAbout": [
                 "Web Development",
-                "Mobile App Development", 
+                "Mobile App Development",
                 "Desktop Application Development",
                 "Backend Development",
                 "Frontend Development",
@@ -175,7 +177,7 @@ export default function RootLayout({
             })
           }}
         />
-        
+
         {/* Website Structured Data */}
         <script
           type="application/ld+json"
@@ -202,7 +204,7 @@ export default function RootLayout({
             })
           }}
         />
-        
+
         {/* Professional Service Structured Data */}
         <script
           type="application/ld+json"

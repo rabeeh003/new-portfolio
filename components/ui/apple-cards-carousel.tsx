@@ -26,6 +26,7 @@ type Card = {
   src: string;
   title: string;
   category: string;
+  logo?: string;
   content: React.ReactNode;
 };
 
@@ -219,18 +220,30 @@ export const Card = ({
               >
                 <IconX className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
               </button>
-              <motion.p
-                layoutId={layout ? `category-${card.title}` : undefined}
-                className="text-base font-medium text-black dark:text-white"
-              >
-                {card.category}
-              </motion.p>
-              <motion.p
-                layoutId={layout ? `title-${card.title}` : undefined}
-                className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
-              >
-                {card.title}
-              </motion.p>
+              <div className="flex">
+                {card.logo && (
+                  <img
+                    src={card.logo}
+                    alt="Project Logo"
+                    className="w-16 h-16 mr-2 object-contain rounded-lg shadow"
+                  />
+                )}
+                <div>
+                  <motion.p
+                    layoutId={layout ? `category-${card.title}` : undefined}
+                    className="text-base font-medium text-black dark:text-white"
+                  >
+                    {card.category}
+                  </motion.p>
+                  <motion.p
+                    layoutId={layout ? `title-${card.title}` : undefined}
+                    className="text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
+                  >
+                    {card.title}
+                  </motion.p>
+                </div>
+              </div>
+
               <div className="py-10">{card.content}</div>
             </motion.div>
           </div>

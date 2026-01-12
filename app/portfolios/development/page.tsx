@@ -18,6 +18,7 @@ type Card = {
     src: string;
     title: string;
     category: string;
+    logo?: string;
     content: React.ReactNode;
 };
 

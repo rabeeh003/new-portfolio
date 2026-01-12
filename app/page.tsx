@@ -1,12 +1,11 @@
 import Hero from '@/components/home/Hero';
+import Services from '@/components/home/Services';
+import { section } from 'motion/react-client';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 
 // Lazy load heavy components below the fold
 const RecentPosters = dynamic(() => import('@/components/home/RecentPosters'), {
-  ssr: true, // Keep SSR for SEO content, but code-split the JS
-});
-const Services = dynamic(() => import('@/components/home/Services'), {
   ssr: true, // Keep SSR for SEO content, but code-split the JS
 });
 const Footer = dynamic(() => import('@/components/home/Footer'));

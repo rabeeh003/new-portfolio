@@ -7,8 +7,8 @@ import Footer from '@/components/home/Footer';
 
 const tabs = [
     // { name: 'All Work', href: '/portfolios', icon: LayoutGrid },
-    { name: 'Posters & Graphics', href: '/portfolios/posters', icon: Palette },
     { name: 'Projects', href: '/portfolios/development', icon: Code },
+    { name: 'Graphics', href: '/portfolios/posters', icon: Palette },
     // { name: 'Video Production', href: '/portfolios/video', icon: Video },
 ];
 
@@ -27,7 +27,7 @@ export default function PortfoliosLayout({ children }: { children: React.ReactNo
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-emerald-400 text-sm font-semibold mb-3 tracking-wider uppercase"
+                            className="text-blue-400 text-sm font-semibold mb-3 tracking-wider uppercase"
                         >
                             portfolios
                         </motion.p>
@@ -39,7 +39,7 @@ export default function PortfoliosLayout({ children }: { children: React.ReactNo
                         >
                             Gallery of
                             <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-600">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
                                 our best work
                             </span>
                         </motion.h2>
@@ -66,8 +66,8 @@ export default function PortfoliosLayout({ children }: { children: React.ReactNo
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.3 + index * 0.1 }}
                                         className={`relative px-6 py-3 rounded-xl flex items-center gap-2 border transition-all duration-300 ${isActive
-                                            ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-emerald-500/50 hover:text-emerald-300'
+                                            ? 'bg-blue-500/10 border-blue-500 text-blue-400'
+                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-blue-500/50 hover:text-blue-300'
                                             }`}
                                     >
                                         <Icon size={18} />
@@ -75,7 +75,7 @@ export default function PortfoliosLayout({ children }: { children: React.ReactNo
                                         {isActive && (
                                             <motion.div
                                                 layoutId="activeTab"
-                                                className="absolute inset-0 rounded-xl bg-emerald-500/10"
+                                                className="absolute inset-0 rounded-xl bg-blue-500/10"
                                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}
@@ -86,7 +86,7 @@ export default function PortfoliosLayout({ children }: { children: React.ReactNo
                     </div>
 
                     {/* Content Area */}
-                    <div className="min-h-[400px]">
+                    <div className="min-h-[400px] md:pb-50">
                         {children}
                     </div>
                 </div>

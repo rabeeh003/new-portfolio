@@ -1,55 +1,92 @@
 import { DummyContent } from "@/app/portfolios/development/page";
-import Kaduk from "@/components/projects/Kaduk";
+import Buyhomesuk from "@/components/projects/Buyhomesuk";
+import Fctc from "@/components/projects/Fctc";
+import Hospi from "@/components/projects/Hospi";
+import Hotler from "@/components/projects/Hotler";
+import Instacar from "@/components/projects/Instacar";
 import Mahalli from "@/components/projects/Mahalli";
-import Milandates from "@/components/projects/Milandates";
+import Metrix from "@/components/projects/Metrix";
+import Misbah from "@/components/projects/Misbah";
+import Modapps from "@/components/projects/modapps";
+import Nearshop from "@/components/projects/Nearshop";
+import Pykin from "@/components/projects/Pykin";
 
 export const projects = [
     {
-        title: "Kaduk Restaurant",
-        category: "Business launch kit",
-        src: "/images/projects/kaduk/kaduk.png",
-        content: <Kaduk />
+        title: "BuyHomesUK",
+        category: "Website and App Development",
+        src: "/images/projects/buyhomesuk/buyhomesuk.png",
+        logo: "/images/projects/buyhomesuk/buyhomesuk.png",
+        content: <Buyhomesuk />
     },
     {
-        title: "Milandates",
-        category: "Business launch kit",
-        src: "/images/projects/milandates/milandates.jpg",
-        content: <Milandates />,
+        title: "Pykin",
+        category: "App Development",
+        src: "/images/projects/pykin/pykin.png",
+        logo: "/images/projects/pykin/pykin.png",
+        content: <Pykin />,
     },
     {
         title: "Mahall Management Software",
         category: "Website and Software",
-        src: "/images/projects/mahalli/mahalli.jpg",
+        src: "/images/projects/mahalli/logo.png",
+        logo: "/images/projects/mahalli/logo.png",
         content: <Mahalli />,
     },
-    // {
-    //     category: "Product",
-    //     title: "Maps for your iPhone 15 Pro Max.",
-    //     src: "https://images.unsplash.com/photo-1599202860130-f600f4948364?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    //     content: <Kaduk />,
-    // },
-    // {
-    //     category: "iOS",
-    //     title: "Photography just got better.",
-    //     src: "https://images.unsplash.com/photo-1602081957921-9137a5d6eaee?q=80&w=2793&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    //     content: <Kaduk />,
-    // },
-    // {
-    //     category: "Hiring",
-    //     title: "Hiring for a Staff Software Engineer",
-    //     src: "https://images.unsplash.com/photo-1511984804822-e16ba72f5848?q=80&w=2048&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    //     content: <Kaduk />,
-    // },
-    // {
-    //     category: "Development",
-    //     title: "Building the Future.",
-    //     src: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=2940&auto=format&fit=crop",
-    //     content: <Kaduk />,
-    // },
-    // {
-    //     category: "Abstract",
-    //     title: "Creative Solutions.",
-    //     src: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2940&auto=format&fit=crop",
-    //     content: <Kaduk />,
-    // },
+    {
+        title: "Instacar Buyers",
+        category: "Website and App Development",
+        src: "/images/projects/instacar/instacar.png",
+        logo: "/images/projects/instacar/instacar.png",
+        content: <Instacar />,
+    },
+    {
+        title: "Nearshop.online.",
+        category: "Multi-vendor eCommerce website",
+        src: "/images/projects/nearshop/nearshop.png",
+        logo: "/images/projects/nearshop/nearshop.png",
+        content: <Nearshop />,
+    },
+    {
+        title: "Modapps.in",
+        category: "Website and App Development",
+        src: "/images/projects/modapps/modapps.png",
+        logo: "/images/projects/modapps/modapps.png",
+        content: <Modapps />,
+    },
+    {
+        title: "FCTC",
+        category: "Website and App Development",
+        src: "/images/projects/fctc/fctc.webp",
+        logo: "/images/projects/fctc/fctc.webp",
+        content: <Fctc />,
+    },
+    {
+        title: "Hotler",
+        category: "Website and App Development",
+        src: "/images/projects/hotler/hotler.png",
+        logo: "/images/projects/hotler/hotler.png",
+        content: <Hotler />,
+    },
+    {
+        title: "Metrix",
+        category: "Website and App Development",
+        src: "/images/projects/metrix/metrix.png",
+        logo: "/images/projects/metrix/metrix.png",
+        content: <Metrix />,
+    },
+    {
+        title: "Misbah",
+        category: "App Development",
+        src: "/images/projects/misbah/misbah.png",
+        logo: "/images/projects/misbah/misbah.png",
+        content: <Misbah />,
+    },
+    {
+        title: "Hospi",
+        category: "Website and App Development",
+        src: "/images/projects/hospi/hospi1.png",
+        logo: "/images/projects/hospi/hospi1.png",
+        content: <Hospi />,
+    },
 ];

@@ -31,7 +31,7 @@ export default function Hero() {
                     >
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/30 bg-blue-950/30 backdrop-blur-sm">
                             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                            <span className="text-sm text-blue-400 font-medium">We Bring Your Vision to Life</span>
+                            <span className="text-sm text-blue-400 font-medium">Software Developer</span>
                         </div>
                     </motion.div>
 
@@ -57,7 +57,7 @@ export default function Hero() {
                             size="lg"
                             className="bg-white text-black hover:bg-gray-200 font-semibold px-8 transition-all hover:scale-105"
                         >
-                            <Link href="/contact">Get Started</Link>
+                            <a href="muhammed-rabeeh-pk.pdf" download target="_blank">Download CV</a>
                         </Button>
                         <Button
                             asChild
@@ -65,7 +65,7 @@ export default function Hero() {
                             size="lg"
                             className="border-blue-500 text-blue-400 hover:bg-blue-950/50 font-semibold px-8 transition-all hover:scale-105"
                         >
-                            <Link href="/contact">Contact →</Link>
+                            <Link href="/contact">Hire Me →</Link>
                         </Button>
                     </div>
                 </motion.div>

@@ -20,12 +20,12 @@ export function NavbarComponent() {
         },
         {
             name: "Portfolios",
-            link: "/portfolios/posters",
+            link: "/portfolios/development",
         },
-        {
-            name: "About",
-            link: "/about",
-        },
+        // {
+        //     name: "About",
+        //     link: "/about",
+        // },
     ];
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
