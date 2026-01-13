@@ -34,12 +34,12 @@ export default function Nearshop() {
             {/* Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <img
-                    src="/images/projects/pykin/pykin1.png"
+                    src="/images/projects/nearshop/nearshop1.png"
                     alt="Project Screenshot 1"
                     className="w-full h-64 object-contain rounded-lg shadow"
                 />
                 <img
-                    src="/images/projects/pykin/pykin2.png"
+                    src="/images/projects/nearshop/nearshop2.png"
                     alt="Project Screenshot 2"
                     className="w-full h-64 object-cover rounded-lg shadow"
                 />
@@ -83,6 +83,55 @@ export default function Nearshop() {
                         <li>Progressive Web App (PWA)</li>
                     </ul>
                 </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <img
+                    src="/images/projects/nearshop/nearshop3.jpeg"
+                    alt="Project Screenshot 1"
+                    className="w-full h-64 object-contain rounded-lg shadow"
+                />
+                 <img
+                    src="/images/projects/nearshop/nearshop11.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop10.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop4.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop9.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop5.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop5.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop6.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                <img
+                    src="/images/projects/nearshop/nearshop7.jpeg"
+                    alt="Project Screenshot 2"
+                    className="w-full h-64 object-cover rounded-lg shadow"
+                />
+                
             </div>
             <div className="flex flex-col bg-gray-500/10 p-3 rounded-lg md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center space-x-4">

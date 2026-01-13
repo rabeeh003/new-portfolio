@@ -36,18 +36,18 @@ export default function Services() {
             logo: 'https://www.infineur.com/media/2020/01/infineur-logo1.png',
             logobg: '#ffffff'
         },
-        {
-            type: 'company',
-            institution: 'Devdroplogy Techsoft pvt ltd',
-            position: 'Full Stack Developer',
-            years: '2024 - 2024',
-            email: 'contact@devdroplogy.com',
-            website: 'https://www.linkedin.com/company/dewdropology-tech-soft-private-limited/',
-            location: 'Bangalore, Karnataka, India',
-            color: 'darkblue',
-            logo: 'https://media.licdn.com/dms/image/v2/D560BAQHpry3xrhqe6g/company-logo_200_200/company-logo_200_200/0/1706512586395?e=1769644800&v=beta&t=4EP7JT29GLDqLzk-7AguTDhDGtMBOHU6qLHHqmBDvhM',
-            logobg: '#ffffff'
-        },
+        // {
+        //     type: 'company',
+        //     institution: 'Devdroplogy Techsoft pvt ltd',
+        //     position: 'Full Stack Developer',
+        //     years: '2024 - 2024',
+        //     email: 'contact@devdroplogy.com',
+        //     website: 'https://www.linkedin.com/company/dewdropology-tech-soft-private-limited/',
+        //     location: 'Bangalore, Karnataka, India',
+        //     color: 'darkblue',
+        //     logo: 'https://media.licdn.com/dms/image/v2/D560BAQHpry3xrhqe6g/company-logo_200_200/company-logo_200_200/0/1706512586395?e=1769644800&v=beta&t=4EP7JT29GLDqLzk-7AguTDhDGtMBOHU6qLHHqmBDvhM',
+        //     logobg: '#ffffff'
+        // },
         {
             type: 'company',
             institution: 'Freelance',

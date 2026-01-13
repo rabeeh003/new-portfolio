@@ -117,65 +117,152 @@ const DevelopmentParallax = ({
 }) => {
     const { scrollYProgress } = useScroll();
     const [isMobile, setIsMobile] = useState(false);
+    const [isLarge, setIsLarge] = useState(false);
+    const [isXLarge, setIsXLarge] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const checkMobile = () => {
+        const checkScreenSize = () => {
             setIsMobile(window.innerWidth < 768);
+            setIsLarge(window.innerWidth >= 1024);
+            setIsXLarge(window.innerWidth >= 1280);
+            setMounted(true);
         };
-        checkMobile();
-        window.addEventListener("resize", checkMobile);
-        return () => window.removeEventListener("resize", checkMobile);
+        checkScreenSize();
+        window.addEventListener("resize", checkScreenSize);
+        return () => window.removeEventListener("resize", checkScreenSize);
     }, []);
 
-    // 4 columns logic
-    const translateFirst = useTransform(scrollYProgress, [0, 1], [0, -100]);
-    const translateSecond = useTransform(scrollYProgress, [0, 1], [0, 100]);
-    const translateThird = useTransform(scrollYProgress, [0, 1], [0, -100]);
-    const translateFourth = useTransform(scrollYProgress, [0, 1], [0, 100]);
+    // Translation transforms for 2 columns (md)
+    const translateFirst2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+    const translateSecond2 = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
-    const fourth = Math.ceil(cards.length / 4);
+    // Translation transforms for 3 columns (lg)
+    const translateFirst3 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+    const translateSecond3 = useTransform(scrollYProgress, [0, 1], [0, 100]);
+    const translateThird3 = useTransform(scrollYProgress, [0, 1], [0, -100]);
 
-    const firstPart = cards.slice(0, fourth);
-    const secondPart = cards.slice(fourth, 2 * fourth);
-    const thirdPart = cards.slice(2 * fourth, 3 * fourth);
-    const fourthPart = cards.slice(3 * fourth);
+    // Translation transforms for 4 columns (xl)
+    const translateFirst4 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+    const translateSecond4 = useTransform(scrollYProgress, [0, 1], [0, 100]);
+    const translateThird4 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+    const translateFourth4 = useTransform(scrollYProgress, [0, 1], [0, 100]);
+
+    // Round-robin distribution function
+    const distributeCards = (items: Card[], numColumns: number): Card[][] => {
+        const columns: Card[][] = Array.from({ length: numColumns }, () => []);
+        items.forEach((card, index) => {
+            columns[index % numColumns].push(card);
+        });
+        return columns;
+    };
+
+    // Distribute cards for 2 columns (md), 3 columns (lg), and 4 columns (xl)
+    const columns2 = distributeCards(cards, 2);
+    const columns3 = distributeCards(cards, 3);
+    const columns4 = distributeCards(cards, 4);
+
+    const [firstPart2, secondPart2] = columns2;
+    const [firstPart3, secondPart3, thirdPart3] = columns3;
+    const [firstPart4, secondPart4, thirdPart4, fourthPart4] = columns4;
 
     return (
         <div
             className={cn("w-full py-10", className)}
         >
-            <div
-                className="grid grid-cols-1 md:grid-cols-4 items-start max-w-7xl mx-auto gap-8 px-4"
-            >
-                <div className="grid gap-8">
-                    {firstPart.map((card, idx) => (
-                        <motion.div style={{ y: isMobile ? 0 : translateFirst }} key={"grid-1" + idx}>
+            {isXLarge && mounted ? (
+                // 4 columns layout (xl screens)
+                <div
+                    className="grid grid-cols-1 xl:grid-cols-4 items-start max-w-7xl mx-auto gap-8 px-4"
+                >
+                    <div className="grid gap-8">
+                        {firstPart4.map((card, idx) => (
+                            <motion.div style={{ y: translateFirst4 }} key={`grid-xl-1-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className="grid gap-8">
+                        {secondPart4.map((card, idx) => (
+                            <motion.div style={{ y: translateSecond4 }} key={`grid-xl-2-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className="grid gap-8">
+                        {thirdPart4.map((card, idx) => (
+                            <motion.div style={{ y: translateThird4 }} key={`grid-xl-3-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className="grid gap-8">
+                        {fourthPart4.map((card, idx) => (
+                            <motion.div style={{ y: translateFourth4 }} key={`grid-xl-4-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            ) : isLarge && mounted ? (
+                // 3 columns layout (lg screens)
+                <div
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start max-w-7xl mx-auto gap-8 px-4"
+                >
+                    <div className="grid gap-8">
+                        {firstPart3.map((card, idx) => (
+                            <motion.div style={{ y: translateFirst3 }} key={`grid-lg-1-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className="grid gap-8">
+                        {secondPart3.map((card, idx) => (
+                            <motion.div style={{ y: translateSecond3 }} key={`grid-lg-2-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className="grid gap-8">
+                        {thirdPart3.map((card, idx) => (
+                            <motion.div style={{ y: translateThird3 }} key={`grid-lg-3-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            ) : !isMobile && mounted ? (
+                // 2 columns layout (md screens)
+                <div
+                    className="grid grid-cols-1 md:grid-cols-2 items-start max-w-7xl mx-auto gap-8 px-4"
+                >
+                    <div className="grid gap-8">
+                        {firstPart2.map((card, idx) => (
+                            <motion.div style={{ y: translateFirst2 }} key={`grid-md-1-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className="grid gap-8">
+                        {secondPart2.map((card, idx) => (
+                            <motion.div style={{ y: translateSecond2 }} key={`grid-md-2-${card.title}-${idx}`}>
+                                <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                // 1 column layout (mobile screens or initial render)
+                <div
+                    className="grid grid-cols-1 items-start max-w-7xl mx-auto gap-8 px-4"
+                >
+                    {cards.map((card, idx) => (
+                        <motion.div key={`grid-${card.title}-${idx}`}>
                             <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
                         </motion.div>
                     ))}
                 </div>
-                <div className="grid gap-8">
-                    {secondPart.map((card, idx) => (
-                        <motion.div style={{ y: isMobile ? 0 : translateSecond }} key={"grid-2" + idx}>
-                            <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
-                        </motion.div>
-                    ))}
-                </div>
-                <div className="grid gap-8">
-                    {thirdPart.map((card, idx) => (
-                        <motion.div style={{ y: isMobile ? 0 : translateThird }} key={"grid-3" + idx}>
-                            <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
-                        </motion.div>
-                    ))}
-                </div>
-                <div className="grid gap-8">
-                    {fourthPart.map((card, idx) => (
-                        <motion.div style={{ y: isMobile ? 0 : translateFourth }} key={"grid-4" + idx}>
-                            <DevelopmentCard card={card} index={idx} onClick={() => onCardSelect(card)} />
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
+            )}
         </div>
     );
 };
