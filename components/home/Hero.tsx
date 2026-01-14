@@ -52,13 +52,13 @@ export default function Hero() {
 
                     {/* CTA Buttons */}
                     <div className="flex flex-wrap gap-4 pt-4">
-                        <Button
-                            asChild
-                            size="lg"
-                            className="bg-white text-black hover:bg-gray-200 font-semibold px-8 transition-all hover:scale-105"
-                        >
-                            <a href="muhammed-rabeeh-pk.pdf" download target="_blank">Download CV</a>
-                        </Button>
+                            <Button
+                                asChild
+                                size="lg"
+                                className="bg-white text-black hover:bg-gray-200 font-semibold px-8 transition-all hover:scale-105"
+                            >
+                                <a href="/muhammed%20rabeeh-pk.pdf" download="muhammed-rabeeh-pk.pdf">Download CV</a>
+                            </Button>
                         <Button
                             asChild
                             variant="default"
