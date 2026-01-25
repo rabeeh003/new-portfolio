@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: "rabeeh pk",
     images: [
       {
-        url: "/images/rabeeh.png",
+        url: "/images/rabeeh.webp",
         width: 1200,
         height: 630,
         alt: "rabeeh pk",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "rabeeh pk - Full Stack Developer | Web, Mobile & Desktop Apps",
     description: "Rabeeh PK is a skilled full-stack developer from Kerala, India. Specializing in web applications, mobile apps, desktop applications, and backend systems. Expert in React, Next.js, Node.js, Python, and modern development technologies.",
-    images: ["/images/rabeeh.png"],
+    images: ["/images/rabeeh.webp"],
   },
   robots: {
     index: true,
